@@ -1,9 +1,26 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { BrainScene } from "../scene/BrainScene";
 import { useGraphStore } from "../state/graph";
+import { useQueryStore } from "../state/query";
 
 export default function Brain() {
-  const { activatedNodeIds } = useGraphStore();
+  const { activatedNodeIds, setActivatedNodes, clearActivated } = useGraphStore();
+  const { lastResponse } = useQueryStore();
+
+  // Wire: query response activated_nodes → graph store → NodeMesh glow + QueryReaction
+  useEffect(() => {
+    if (!lastResponse) {
+      clearActivated();
+      return;
+    }
+    const ids = lastResponse.activated_nodes ?? [];
+    if (ids.length > 0) {
+      setActivatedNodes(ids);
+    } else {
+      clearActivated();
+    }
+  }, [lastResponse, setActivatedNodes, clearActivated]);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">

@@ -4,13 +4,19 @@ import { CameraRig } from "./CameraRig";
 import { EdgeMesh } from "./EdgeMesh";
 import { NodeMesh } from "./NodeMesh";
 import { Postprocessing } from "./Postprocessing";
+import { QueryReaction } from "./QueryReaction";
+import { SpeechPulse } from "./SpeechPulse";
 import { computeLayout, makeDemoGraph } from "./layout";
 import { useGraphStore } from "../state/graph";
 
-function GraphScene({ activatedIds }: { activatedIds: Set<string> }) {
+interface GraphSceneProps {
+  activatedIds: Set<string>;
+  analyserNode?: AnalyserNode | null;
+}
+
+function GraphScene({ activatedIds, analyserNode }: GraphSceneProps) {
   const { nodes: storeNodes, edges: storeEdges } = useGraphStore();
 
-  // Fall back to demo graph if backend returned empty
   const { nodes, edges } = useMemo(() => {
     if (storeNodes.length > 0) return { nodes: storeNodes, edges: storeEdges };
     return makeDemoGraph();
@@ -18,7 +24,6 @@ function GraphScene({ activatedIds }: { activatedIds: Set<string> }) {
 
   const layout = useMemo(() => computeLayout(nodes, edges), [nodes, edges]);
 
-  // Stable per-node phase offset for idle motion (deterministic by index)
   const phaseOffsets = useMemo(
     () => nodes.map((_, i) => (i * 2.399963) % (Math.PI * 2)),
     [nodes],
@@ -26,12 +31,16 @@ function GraphScene({ activatedIds }: { activatedIds: Set<string> }) {
 
   return (
     <>
-      {/* Edges — rendered first (behind nodes) */}
+      {/* Speech pulse modulator — drives speechAmplitudeRef every frame */}
+      <SpeechPulse analyserNode={analyserNode} />
+
+      {/* Edges — behind nodes */}
       {edges.map((e, i) => {
         const from = layout.get(e.source);
         const to   = layout.get(e.target);
         if (!from || !to) return null;
-        const isActive = activatedIds.has(e.source) && activatedIds.has(e.target);
+        const isActive =
+          activatedIds.has(e.source) && activatedIds.has(e.target);
         return (
           <EdgeMesh
             key={i}
@@ -57,18 +66,29 @@ function GraphScene({ activatedIds }: { activatedIds: Set<string> }) {
           />
         );
       })}
+
+      {/* Query reaction effects — halos, edge particles, ripple */}
+      <QueryReaction
+        activatedIds={activatedIds}
+        nodes={nodes}
+        edges={edges}
+        layout={layout}
+      />
     </>
   );
 }
 
 interface BrainSceneProps {
   activatedIds?: Set<string>;
+  analyserNode?: AnalyserNode | null;
 }
 
-export function BrainScene({ activatedIds = new Set() }: BrainSceneProps) {
+export function BrainScene({
+  activatedIds = new Set(),
+  analyserNode,
+}: BrainSceneProps) {
   const { fetchGraph } = useGraphStore();
 
-  // Fetch real graph on mount (falls back to demo if backend is unreachable)
   useEffect(() => {
     fetchGraph().catch(() => {});
   }, [fetchGraph]);
@@ -92,7 +112,7 @@ export function BrainScene({ activatedIds = new Set() }: BrainSceneProps) {
       <pointLight position={[-6, -4, 6]} intensity={0.15} color="#aaaacc" />
 
       <Suspense fallback={null}>
-        <GraphScene activatedIds={activatedIds} />
+        <GraphScene activatedIds={activatedIds} analyserNode={analyserNode} />
       </Suspense>
 
       <CameraRig />
