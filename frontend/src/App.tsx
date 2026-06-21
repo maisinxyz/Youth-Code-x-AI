@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { Toaster } from "./components/ui/Toaster";
 import Auth from "./routes/Auth";
+import AuthProxy from "./routes/AuthProxy";
 import Connect from "./routes/Connect";
 import Landing from "./routes/Landing";
 import Loading from "./routes/Loading";
@@ -24,6 +25,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/auth-proxy" element={<AuthProxy />} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/connect" element={<Connect />} />
         <Route path="/loading" element={<Loading />} />

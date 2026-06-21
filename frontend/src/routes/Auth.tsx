@@ -1,9 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Check, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useConnectorsStore } from "../state/connectors";
-import type { ConnectorName } from "../lib/api";
+import { supabase } from "../lib/supabase";
 
 // ── Primary 6 connectors ─────────────────────────────────────────────
 const PRIMARY_CONNECTORS = [
@@ -49,11 +48,8 @@ function ConnectorCard({
       return;
     }
     setConnecting(true);
-    // Simulate OAuth flow
-    setTimeout(() => {
-      setConnecting(false);
-      onConnect();
-    }, 800 + Math.random() * 600);
+    // Immediately start OAuth flow without fake timeout
+    onConnect();
   };
 
   return (
@@ -80,7 +76,7 @@ function ConnectorCard({
         <img
           src={connector.src}
           alt={connector.label}
-          className="h-5 w-5 object-contain"
+          className={`h-5 w-5 object-contain transition-all duration-300 ${!connected ? "grayscale opacity-50 group-hover:opacity-75" : ""}`}
           draggable={false}
         />
       </div>
@@ -93,7 +89,7 @@ function ConnectorCard({
       </span>
 
       {/* Status */}
-      <div className="ml-auto flex-shrink-0">
+      <div className="ml-auto flex-shrink-0 flex items-center justify-center w-6 h-6">
         {connecting ? (
           <motion.div
             className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
@@ -105,9 +101,8 @@ function ConnectorCard({
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 500, damping: 25 }}
-          >
-            <Check className="h-4 w-4 text-white/60" />
-          </motion.div>
+            className="h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+          />
         ) : (
           <span className="font-mono text-[10px] text-white/20 uppercase tracking-wider group-hover:text-white/40 transition-colors">
             Connect
@@ -123,14 +118,81 @@ import { WordmarkPanel } from "../panels/WordmarkPanel";
 // ── Main Auth Page ───────────────────────────────────────────────────
 export default function Auth() {
   const navigate = useNavigate();
-  const { connected, toggleConnector } = useConnectorsStore();
+  const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
   const [showMore, setShowMore] = useState(false);
 
-  const handleConnect = (id: string) => {
-    toggleConnector(id as ConnectorName);
+  const handleConnect = async (id: string) => {
+    // Map your custom connector IDs to Supabase provider names
+    const providerMapping: Record<string, any> = {
+      slack: 'slack',
+      notion: 'notion',
+      github: 'github',
+      drive: 'google',
+      discord: 'discord',
+      figma: 'figma'
+    };
+
+    const provider = providerMapping[id];
+    if (!provider) {
+      console.warn(`Provider ${id} is not configured for Supabase OAuth mapping yet.`);
+      return;
+    }
+
+    try {
+      // Trigger Supabase OAuth
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          // Return back to the /auth page instead of /auth/callback since there is no callback route
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+
+      if (error) {
+        console.error("Error connecting to provider:", error.message);
+      }
+    } catch (err) {
+      console.warn("Supabase integration is mocked or not fully configured.", err);
+    }
   };
 
-  const totalConnected = connected.size;
+  useEffect(() => {
+    // Helper to map Supabase providers back to our app's connector IDs
+    const updateConnectedFromProviders = (providers: string[]) => {
+      const reverseMapping: Record<string, string> = {
+        'google': 'drive',
+        'slack': 'slack',
+        'notion': 'notion',
+        'github': 'github',
+        'discord': 'discord',
+        'figma': 'figma'
+      };
+      const connectedIds = providers.map(p => reverseMapping[p]).filter(Boolean);
+      setConnectedIds(new Set(connectedIds));
+    };
+
+    // Check existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.app_metadata?.providers) {
+        updateConnectedFromProviders(session.user.app_metadata.providers);
+      }
+    });
+
+    // Listen for auth events (e.g. returning from OAuth redirect)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user?.app_metadata?.providers) {
+          updateConnectedFromProviders(session.user.app_metadata.providers);
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const totalConnected = connectedIds.size;
   const canProceed = totalConnected >= 1;
 
   return (
@@ -187,7 +249,7 @@ export default function Auth() {
             <ConnectorCard
               key={c.id}
               connector={c}
-              connected={connected.has(c.id as ConnectorName)}
+              connected={connectedIds.has(c.id)}
               onConnect={() => handleConnect(c.id)}
               index={i}
             />
@@ -221,7 +283,7 @@ export default function Auth() {
                   <ConnectorCard
                     key={c.id}
                     connector={c}
-                    connected={connected.has(c.id as ConnectorName)}
+                    connected={connectedIds.has(c.id)}
                     onConnect={() => handleConnect(c.id)}
                     index={i}
                   />
