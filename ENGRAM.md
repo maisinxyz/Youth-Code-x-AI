@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 3 — Frontend §9 scaffold COMPLETE ✅ | §10 Landing page next
+**Current phase:** Phase 3 — Frontend §9 + §10 COMPLETE ✅ | §11 Connector selection screen next
 
 ---
 
@@ -457,7 +457,7 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 
 ### Phase 3 — Frontend
 - ✅ §9 Frontend scaffold (Vite + React 19 + TS, Tailwind v3 token-mapped, react-router v7, Zustand, openapi-typescript types, Vercel SPA config)
-- ⬜ §10 Landing page
+- ✅ §10 Landing page — adapted PrismaHero (WordsPullUp + R3F particle field bg + Login → /connect), HowItWorks, BrainPreview (ContainerScroll + MiniBrain R3F), ConnectorMosaic, SplineSection (lazy spline-viewer), CTA → /connect
 - ⬜ §11 Connector selection screen
 - ⬜ §12 Brain loading animation
 - ⬜ §13 Three.js semantic graph — base render
