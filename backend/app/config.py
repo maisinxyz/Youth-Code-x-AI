@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     environment: str = "dev"
     log_level: str = "info"
 
-    # CORS
-    allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    # CORS — Allow all for local network access
+    allowed_origins: str = "*"
 
     # Backboard (Phase 5 §21)
     backboard_api_key: str = ""

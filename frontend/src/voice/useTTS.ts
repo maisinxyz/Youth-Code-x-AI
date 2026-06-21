@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_API_URL ?? `http://${window.location.hostname}:8000`;
 
 export interface TTSHook {
   speak: (text: string) => Promise<void>;
