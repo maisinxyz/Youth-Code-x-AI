@@ -30,6 +30,7 @@ export function NodeMesh({
 }: NodeMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const zRef = useRef(position.z);
+  const viewPosRef = useRef(new THREE.Vector3());
 
   const baseScale = useMemo(() => 0.065 + node.weight * 0.065, [node.weight]);
   const baseBrightness = useMemo(
@@ -37,7 +38,7 @@ export function NodeMesh({
     [node.type],
   );
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     if (!meshRef.current) return;
     const t = clock.elapsedTime;
 
@@ -69,7 +70,8 @@ export function NodeMesh({
     mat.emissiveIntensity += (targetEmissive - mat.emissiveIntensity) * 0.08;
 
     // Tint amethyst near the bottom (where chat bar is)
-    const mix = Math.min(0.8, Math.max(0, -position.y * 0.12));
+    viewPosRef.current.copy(meshRef.current.position).project(camera);
+    const mix = Math.min(0.8, Math.max(0, -viewPosRef.current.y * 0.8));
     mat.emissive.copy(BASE_EMISSIVE).lerp(PURPLE, activated ? 0.8 : mix);
   });
 
