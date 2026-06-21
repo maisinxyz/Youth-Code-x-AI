@@ -82,15 +82,10 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
     # ── 1. Canned answer check ────────────────────────────────────────────────
     canned = get_canned_answer(req.query, session_id=session_id)
     if canned is not None:
-        # Enrich activated_nodes from live store if we have any
-        if not canned.activated_nodes:
-            all_nodes = store.all_nodes()
-            canned = QueryResponse(
-                answer=canned.answer,
-                sources=canned.sources,
-                activated_nodes=[n.id for n in all_nodes[:10]],
-                session_id=session_id,
-            )
+        # Stamp last_active on the canned activation set so the graph reflects
+        # the query in subsequent reads.
+        if canned.activated_nodes:
+            await get_graph_state().mark_active(canned.activated_nodes)
         return canned
 
     # ── 2. Keyword scoring ────────────────────────────────────────────────────

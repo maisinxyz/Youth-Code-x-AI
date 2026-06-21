@@ -7,6 +7,7 @@ import re
 import uuid
 
 from app.models.schemas import QueryResponse, Source
+from app.services import store
 from datetime import datetime, timezone
 
 _DEMO_TS    = datetime(2024, 3,  1, 10, 0, 0, tzinfo=timezone.utc)
@@ -16,8 +17,10 @@ _STUB_SESSION = "demo-session-meridian"
 
 
 def normalize_query(query: str) -> str:
-    """Lowercase, strip punctuation, collapse whitespace."""
+    """Lowercase, strip apostrophes, replace remaining punctuation with spaces, collapse whitespace."""
     q = query.lower()
+    # Strip apostrophes / smart quotes WITHOUT inserting a space, so "what's" → "whats"
+    q = re.sub(r"[’‘'`]", "", q)
     q = re.sub(r"[^\w\s]", " ", q)
     q = re.sub(r"\s+", " ", q).strip()
     return q
@@ -339,6 +342,47 @@ _CANNED: dict[str, QueryResponse] = {
 }
 
 
+# ── Per-question semantic activation map ─────────────────────────────────────
+# Each canonical query maps to a list of node LABELS to light up on the brain
+# visual. Labels are resolved against the live store at request time, so any
+# label that didn't survive ingest is silently dropped (the response still
+# pads to _MIN_ACTIVATED via top-weight nodes).
+_CANNED_NODE_LABELS: dict[str, list[str]] = {
+    "why did we choose postgres": [
+        "Postgres", "PostgreSQL", "MongoDB", "Atlas", "Alice", "ACID",
+        "Blake", "Meridian",
+    ],
+    "why postgres": [
+        "Postgres", "PostgreSQL", "MongoDB", "Atlas", "Alice", "ACID",
+    ],
+    "who owns the atlas project": [
+        "Alice", "Atlas", "Grace", "Bob", "Frank", "Phoenix", "Kafka",
+        "Postgres", "PostgreSQL",
+    ],
+    "what is the atlas project": [
+        "Atlas", "Postgres", "PostgreSQL", "Phoenix", "Kafka", "Alice",
+        "Bob", "Redis", "Elasticsearch",
+    ],
+    "why did we choose kafka": [
+        "Kafka", "RabbitMQ", "Phoenix", "Bob", "Kubernetes", "Titan",
+        "Atlas",
+    ],
+    "what decisions were made in q1": [
+        "Postgres", "PostgreSQL", "Kafka", "TypeScript", "PyTorch",
+        "Kubernetes", "Atlas", "Phoenix", "Horizon", "Orion", "Titan",
+        "Alice", "Bob", "Carol", "Dave", "Frank",
+    ],
+    "whats blocking v2": [
+        "v2", "Atlas", "Postgres", "PostgreSQL", "Orion", "Horizon",
+        "Alice", "Dave", "Carol", "Skyler", "Eve", "Nathan",
+        "Elasticsearch", "PyTorch",
+    ],
+}
+
+_MIN_ACTIVATED = 4
+_MAX_ACTIVATED = 12
+
+
 # Alias map: alternate phrasings → canonical key
 _ALIASES: dict[str, str] = {
     # Postgres
@@ -387,22 +431,56 @@ _ALIASES: dict[str, str] = {
 }
 
 
+def _resolve_activated_nodes(canonical_key: str) -> list[str]:
+    """
+    Translate the per-question label hints into concrete node IDs from the
+    live store. Pads with top-weight nodes so the brain always lights up at
+    least _MIN_ACTIVATED, capped at _MAX_ACTIVATED.
+    """
+    label_hints = _CANNED_NODE_LABELS.get(canonical_key, [])
+    seen: set[str] = set()
+    ids: list[str] = []
+
+    for label in label_hints:
+        if len(ids) >= _MAX_ACTIVATED:
+            break
+        node = store.get_node_by_label(label)
+        if node is not None and node.id not in seen:
+            ids.append(node.id)
+            seen.add(node.id)
+
+    # Pad with top-weight nodes if we under-resolved
+    if len(ids) < _MIN_ACTIVATED:
+        ranked = sorted(store.all_nodes(), key=lambda n: n.weight, reverse=True)
+        for node in ranked:
+            if len(ids) >= _MIN_ACTIVATED:
+                break
+            if node.id not in seen:
+                ids.append(node.id)
+                seen.add(node.id)
+
+    return ids
+
+
 def get_canned_answer(query: str, session_id: str | None = None) -> QueryResponse | None:
     """
     Return a canned QueryResponse if query normalizes to a known demo question.
     session_id is injected so the caller's session is preserved.
+    activated_nodes are resolved live against the store via label hints, so the
+    correct meridian nodes light up on the brain visual.
     """
     norm = normalize_query(query)
 
-    # Try exact key
-    key = _ALIASES.get(norm, norm)
-    template = _CANNED.get(key)
+    # Try exact key (with alias fallthrough)
+    canonical = _ALIASES.get(norm, norm)
+    template = _CANNED.get(canonical)
 
-    # Try prefix match if exact not found
+    # Try prefix / containment match if exact not found
     if template is None:
         for canned_key in _CANNED:
             if canned_key in norm or norm in canned_key:
                 template = _CANNED[canned_key]
+                canonical = canned_key
                 break
 
     if template is None:
@@ -411,6 +489,6 @@ def get_canned_answer(query: str, session_id: str | None = None) -> QueryRespons
     return QueryResponse(
         answer=template.answer,
         sources=template.sources,
-        activated_nodes=template.activated_nodes,
+        activated_nodes=_resolve_activated_nodes(canonical),
         session_id=session_id or _STUB_SESSION,
     )

@@ -13,7 +13,6 @@ This file governs how Claude Code works on the Engram project across every sessi
 5. **Never advance to the next PRD section until the current one passes its acceptance criteria.** Acceptance criteria are written into the PRD for each section — they are the gate.
 6. **Superpowers skills auto-trigger** — `systematic-debugging`, `verification-before-completion`, `test-driven-development`. Do not invoke them manually; let the harness route them.
 7. **No wasted tokens on pleasantries** and yap in your chat outputs. be straight to the point and give me the answer to my query or response or output
-
 ---
 
 ## Phase-Specific Rules

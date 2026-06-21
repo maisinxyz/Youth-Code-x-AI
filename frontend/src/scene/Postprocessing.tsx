@@ -1,21 +1,15 @@
-import { ChromaticAberration, Bloom, EffectComposer } from "@react-three/postprocessing";
-import { Vector2 } from "three";
-
-const CA_OFFSET = new Vector2(0.0007, 0.0007);
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 
 export function Postprocessing() {
+  // Bloom only the brightest pixels — baseline node emission stays under the
+  // 1.0 luminance threshold so 185 nodes don't merge into one white blob.
   return (
     <EffectComposer>
       <Bloom
-        intensity={0.4}
-        luminanceThreshold={0.8}
-        luminanceSmoothing={0.4}
+        intensity={0.6}
+        luminanceThreshold={1.0}
+        luminanceSmoothing={0.2}
         mipmapBlur
-      />
-      <ChromaticAberration
-        offset={CA_OFFSET}
-        radialModulation={false}
-        modulationOffset={0}
       />
     </EffectComposer>
   );

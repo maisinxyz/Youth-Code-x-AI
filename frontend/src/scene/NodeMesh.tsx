@@ -4,75 +4,51 @@ import * as THREE from "three";
 import type { GraphNode } from "../lib/api";
 import { speechAmplitudeRef } from "./speechAmplitude";
 
-const PURPLE = new THREE.Color("#9B5DE5");
-const BASE_EMISSIVE = new THREE.Color("#fff4ed");
-
 const TYPE_BRIGHTNESS: Record<string, number> = {
-  decision:      1.0,
-  person:        0.85,
-  project:       0.8,
-  tech:          0.72,
-  open_question: 0.6,
+  decision:      0.55,
+  person:        0.45,
+  project:       0.40,
+  tech:          0.35,
+  open_question: 0.30,
 };
 
 interface NodeMeshProps {
   node: GraphNode;
   position: THREE.Vector3;
-  activated?: boolean;
   phaseOffset?: number;
 }
 
-export function NodeMesh({
-  node,
-  position,
-  activated = false,
-  phaseOffset = 0,
-}: NodeMeshProps) {
+export function NodeMesh({ node, position, phaseOffset = 0 }: NodeMeshProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const zRef = useRef(position.z);
-  const viewPosRef = useRef(new THREE.Vector3());
 
-  const baseScale = useMemo(() => 0.065 + node.weight * 0.065, [node.weight]);
+  const baseScale = useMemo(() => 0.045 + node.weight * 0.045, [node.weight]);
   const baseBrightness = useMemo(
-    () => TYPE_BRIGHTNESS[node.type] ?? 0.7,
+    () => TYPE_BRIGHTNESS[node.type] ?? 0.4,
     [node.type],
   );
 
-  useFrame(({ clock, camera }) => {
+  useFrame(({ clock }) => {
     if (!meshRef.current) return;
     const t = clock.elapsedTime;
 
-    // Z-forward: activated nodes ease toward camera by 1 unit
-    const targetZ = activated ? position.z + 1.0 : position.z;
-    zRef.current += (targetZ - zRef.current) * 0.05;
-
     // Idle Y bob
     const bob = Math.sin(t * 0.7 + phaseOffset) * 0.04;
-    meshRef.current.position.set(position.x, position.y + bob, zRef.current);
+    meshRef.current.position.set(position.x, position.y + bob, position.z);
 
-    // Scale: breathe + activated bump + speech pulse modulation
+    // Scale: breathe + speech pulse modulation while TTS is playing
     const amp = speechAmplitudeRef.current;
     const breathe = 1 + Math.sin(t * 0.5 + phaseOffset * 1.3) * 0.04;
-    const activatedScale = activated ? 1.5 : 1.0;
-    const speechScale = activated ? 1 + amp * 0.55 : 1 + amp * 0.18;
-    const s = baseScale * breathe * activatedScale * speechScale;
-    meshRef.current.scale.setScalar(s);
+    const speechScale = 1 + amp * 0.12;
+    meshRef.current.scale.setScalar(baseScale * breathe * speechScale);
 
-    // Rotation — slow tumble
+    // Slow tumble
     meshRef.current.rotation.y += 0.004;
     meshRef.current.rotation.x += 0.002;
 
-    // Emissive ramp — activated goes brighter; speech pulse adds a flicker
+    // Subtle emissive nudge with speech amplitude — kept under bloom threshold
     const mat = meshRef.current.material as THREE.MeshStandardMaterial;
-    const targetEmissive = activated
-      ? 3.5 + amp * 2.0
-      : baseBrightness * 1.8 + amp * 0.4;
-    mat.emissiveIntensity += (targetEmissive - mat.emissiveIntensity) * 0.08;
-
-    // Tint amethyst near the bottom (where chat bar is)
-    viewPosRef.current.copy(meshRef.current.position).project(camera);
-    const mix = Math.min(0.8, Math.max(0, -viewPosRef.current.y * 0.8));
-    mat.emissive.copy(BASE_EMISSIVE).lerp(PURPLE, activated ? 0.8 : mix);
+    const target = baseBrightness + amp * 0.15;
+    mat.emissiveIntensity += (target - mat.emissiveIntensity) * 0.1;
   });
 
   return (
@@ -81,8 +57,8 @@ export function NodeMesh({
       <meshStandardMaterial
         color="#ffffff"
         emissive="#ffffff"
-        emissiveIntensity={baseBrightness * 1.8}
-        roughness={0.25}
+        emissiveIntensity={baseBrightness}
+        roughness={0.35}
         metalness={0.05}
         toneMapped={false}
       />

@@ -8,12 +8,12 @@ const DEG = Math.PI / 180;
 
 // 6 connector sectors arranged evenly around the sphere
 const SECTOR_CENTERS: Record<string, THREE.Vector3> = {
-  slack:       sphericalToVec(0   * DEG,  20 * DEG, 7.5),
-  notion:      sphericalToVec(60  * DEG, -15 * DEG, 7.5),
-  drive:       sphericalToVec(120 * DEG,  25 * DEG, 7.5),
-  confluence:  sphericalToVec(180 * DEG, -10 * DEG, 7.5),
-  jira:        sphericalToVec(240 * DEG,  15 * DEG, 7.5),
-  teams:       sphericalToVec(300 * DEG, -20 * DEG, 7.5),
+  slack:       sphericalToVec(0   * DEG,  20 * DEG, 9.0),
+  notion:      sphericalToVec(60  * DEG, -15 * DEG, 9.0),
+  drive:       sphericalToVec(120 * DEG,  25 * DEG, 9.0),
+  confluence:  sphericalToVec(180 * DEG, -10 * DEG, 9.0),
+  jira:        sphericalToVec(240 * DEG,  15 * DEG, 9.0),
+  teams:       sphericalToVec(300 * DEG, -20 * DEG, 9.0),
 };
 
 function sphericalToVec(azimuth: number, elevation: number, radius: number): THREE.Vector3 {
@@ -47,10 +47,13 @@ export function computeLayout(nodes: GraphNode[], edges: GraphEdge[]): LayoutMap
     return fibonacciLayout(nodes, edges);
   }
 
-  // Place each group in its sector using a mini fibonacci sphere around the sector center
+  // Place each group in its sector using a mini fibonacci sphere around the sector center.
+  // Scale the cluster radius with node count so a 153-node cluster doesn't pack
+  // into the same volume as a 3-node cluster — that's what makes the visual look
+  // like one giant white blob instead of discrete topology.
   for (const [src, groupNodes] of Object.entries(groups)) {
     const center = SECTOR_CENTERS[src];
-    const spread = 2.8; // radius of the mini-sphere for this cluster
+    const spread = Math.min(4.5, 1.6 + Math.sqrt(groupNodes.length) * 0.32);
     groupNodes.forEach((node, i) => {
       const n = groupNodes.length;
       const y = 1 - (i / Math.max(n - 1, 1)) * 2;
@@ -129,7 +132,7 @@ export function computeLayout(nodes: GraphNode[], edges: GraphEdge[]): LayoutMap
       v.multiplyScalar(0.82);
       // Clamp to reasonable range
       const len = p.length();
-      if (len > 12) p.multiplyScalar(12 / len);
+      if (len > 14) p.multiplyScalar(14 / len);
       if (len < 0.5) p.multiplyScalar(0.5 / len);
     });
   }

@@ -2,8 +2,10 @@
 
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
-**Last updated:** 2026-05-08
+**Last updated:** 2026-05-09
 **Current phase:** Phase 4 COMPLETE ✅ | §1–§20 done | Next: Phase 5 — Hackathon integrations (§21 Backboard, §22 Supabase)
+
+**2026-05-09 patch:** canned answers (`backend/app/services/canned_answers.py`) now resolve `activated_nodes` from a per-question label hint map against the live store, so the brain visual lights up the semantically correct meridian nodes instead of the first 10 in the dict. `normalize_query` strips apostrophes (so "what's" matches "whats") instead of replacing them with spaces. `query.py` no longer overwrites canned activations with a meaningless top-of-store slice.
 
 ---
 
