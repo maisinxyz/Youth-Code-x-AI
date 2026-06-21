@@ -41,6 +41,14 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
   const { start, stop, transcript, isListening, isSupported } =
     useSpeechRecognition();
 
+  // 100ms debounced spinner — don't flash spinner for fast responses
+  const [showSpinner, setShowSpinner] = useState(false);
+  useEffect(() => {
+    if (!isPending) { setShowSpinner(false); return; }
+    const id = setTimeout(() => setShowSpinner(true), 100);
+    return () => clearTimeout(id);
+  }, [isPending]);
+
   // When final transcript arrives after releasing the mic, populate the input
   // and auto-submit
   useEffect(() => {
@@ -169,7 +177,7 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
         </AnimatePresence>
 
         {/* ── Submit / pending indicator ────────────────── */}
-        {isPending ? (
+        {showSpinner ? (
           <span className="h-2 w-2 flex-shrink-0 animate-pulse rounded-full bg-white/45" />
         ) : (
           <button

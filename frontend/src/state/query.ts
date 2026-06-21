@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { postQuery, type QueryResponse } from "../lib/api";
+import { toast } from "./toast";
 
 type QueryState = {
   lastResponse: QueryResponse | null;
@@ -26,7 +27,9 @@ export const useQueryStore = create<QueryState>((set, get) => ({
         isPending: false,
       });
     } catch (err) {
-      set({ isPending: false, error: (err as Error).message });
+      const message = (err as Error).message;
+      set({ isPending: false, error: message });
+      toast.error(`Query failed: ${message}`);
     }
   },
   reset: () => set({ lastResponse: null, sessionId: null, error: null }),

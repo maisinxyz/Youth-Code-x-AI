@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
+import { Toaster } from "./components/ui/Toaster";
 import Auth from "./routes/Auth";
 import Connect from "./routes/Connect";
 import Landing from "./routes/Landing";
@@ -19,20 +20,23 @@ function BrainFallback() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/waitlist" element={<Waitlist />} />
-      <Route path="/connect" element={<Connect />} />
-      <Route path="/loading" element={<Loading />} />
-      <Route
-        path="/brain"
-        element={
-          <Suspense fallback={<BrainFallback />}>
-            <Brain />
-          </Suspense>
-        }
-      />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/connect" element={<Connect />} />
+        <Route path="/loading" element={<Loading />} />
+        <Route
+          path="/brain"
+          element={
+            <Suspense fallback={<BrainFallback />}>
+              <Brain />
+            </Suspense>
+          }
+        />
+      </Routes>
+      <Toaster />
+    </>
   );
 }

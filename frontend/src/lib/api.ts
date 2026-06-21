@@ -19,7 +19,7 @@ export type ConnectorName =
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
-class ApiError extends Error {
+export class ApiError extends Error {
   readonly status: number;
   readonly url: string;
   readonly body: unknown;
@@ -36,6 +36,7 @@ async function request<T>(
   path: string,
   init?: RequestInit & { json?: unknown },
 ): Promise<T> {
+  const method = init?.method ?? "GET";
   const url = `${BASE_URL}${path}`;
   const headers = new Headers(init?.headers);
   let body: BodyInit | undefined;
@@ -45,9 +46,25 @@ async function request<T>(
     body = JSON.stringify(init.json);
   }
 
+  // Dev logging — logs every request with method, path, status, and timing
+  const t0 = import.meta.env.DEV ? performance.now() : 0;
+
   const res = await fetch(url, { ...init, headers, body });
   const text = await res.text();
   const parsed = text ? safeParse(text) : null;
+
+  if (import.meta.env.DEV) {
+    const ms = Math.round(performance.now() - t0);
+    const tag = res.ok ? "%c✓" : "%c✗";
+    const style = res.ok
+      ? "color:#4ade80;font-weight:bold"
+      : "color:#f87171;font-weight:bold";
+    console.debug(
+      `${tag} [API] ${method} ${path} → ${res.status} (${ms}ms)`,
+      style,
+      parsed ?? "(empty)",
+    );
+  }
 
   if (!res.ok) {
     throw new ApiError(res.status, url, parsed);
@@ -84,5 +101,3 @@ export function postConnectorIngest(
 ): Promise<IngestResponse> {
   return request(`/ingest/connector/${name}`, { method: "POST" });
 }
-
-export { ApiError };

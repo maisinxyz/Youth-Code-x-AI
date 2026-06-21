@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { getGraph, type GraphEdge, type GraphNode } from "../lib/api";
+import { toast } from "./toast";
 
 type GraphState = {
   nodes: GraphNode[];
@@ -25,7 +26,9 @@ export const useGraphStore = create<GraphState>((set) => ({
       const res = await getGraph();
       set({ nodes: res.nodes, edges: res.edges, isLoading: false });
     } catch (err) {
-      set({ isLoading: false, error: (err as Error).message });
+      const message = (err as Error).message;
+      set({ isLoading: false, error: message });
+      toast.error(`Graph unavailable — is the backend running? (${message})`);
     }
   },
 

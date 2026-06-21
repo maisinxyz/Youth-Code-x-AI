@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SectionWithMockup from "../components/ui/section-with-mockup";
+import { useConnectorsStore } from "../state/connectors";
+import type { ConnectorName } from "../lib/api";
 
 // ── Connector logo data ──────────────────────────────────────────────
 const CONNECTORS = [
@@ -80,9 +82,21 @@ function HorizontalBelt() {
   );
 }
 
+// The 6 connectors the backend actually supports
+const INGESTABLE: ConnectorName[] = ["slack", "notion", "drive", "confluence", "jira", "teams"];
+
 // ── Main page ────────────────────────────────────────────────────────
 export default function Connect() {
   const navigate = useNavigate();
+  const { ingestConnector } = useConnectorsStore();
+
+  const handleBuild = () => {
+    // Fire all 6 ingests in parallel — non-blocking so the loading animation
+    // can run concurrently. The brain screen fetches the graph after the
+    // animation completes, by which point ingest will be done.
+    INGESTABLE.forEach((name) => void ingestConnector(name));
+    navigate("/loading");
+  };
 
   return (
     <div className="relative h-screen bg-black overflow-hidden flex flex-col">
@@ -116,7 +130,7 @@ export default function Connect() {
             viewport={{ once: true }}
           >
             <button
-              onClick={() => navigate("/loading")}
+              onClick={handleBuild}
               className="group inline-flex items-center gap-3 rounded-full bg-white py-1.5 pl-6 pr-1.5 font-mono text-sm font-medium text-black transition-all duration-150 hover:gap-4 active:scale-[0.97]"
             >
               Build your brain

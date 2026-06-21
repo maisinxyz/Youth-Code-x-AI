@@ -5,6 +5,7 @@ import {
   type ConnectorName,
   type IngestResponse,
 } from "../lib/api";
+import { toast } from "./toast";
 
 type ConnectorStatus = "idle" | "ingesting" | "done" | "error";
 
@@ -41,10 +42,12 @@ export const useConnectorsStore = create<ConnectorsState>((set) => ({
         results: { ...s.results, [name]: res },
       }));
     } catch (err) {
+      const message = (err as Error).message;
       set((s) => ({
         statuses: { ...s.statuses, [name]: "error" },
-        errors: { ...s.errors, [name]: (err as Error).message },
+        errors: { ...s.errors, [name]: message },
       }));
+      toast.error(`Failed to connect ${name}: ${message}`);
     }
   },
 }));
