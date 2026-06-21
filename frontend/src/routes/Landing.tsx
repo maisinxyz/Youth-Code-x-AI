@@ -3,7 +3,6 @@ import { ConnectSection } from "../components/landing/ConnectSection";
 import { FooterSection } from "../components/landing/FooterSection";
 import { HeroSection } from "../components/landing/HeroSection";
 import { HowItWorksSection } from "../components/landing/HowItWorksSection";
-import { SplineSection } from "../components/landing/SplineSection";
 
 export default function Landing() {
   return (
@@ -20,7 +19,6 @@ export default function Landing() {
       <div id="section-connect">
         <ConnectSection />
       </div>
-      <SplineSection />
       <FooterSection />
     </main>
   );

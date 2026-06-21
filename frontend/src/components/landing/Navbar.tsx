@@ -16,7 +16,6 @@ const navigationLinks = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#demo", label: "Demo" },
   { href: "#connectors", label: "Connectors" },
-  { href: "#semantic-search", label: "Semantic Search" },
 ]
 
 export function Navbar() {
