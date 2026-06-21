@@ -11,7 +11,12 @@ from typing import Any
 from app.models.schemas import GraphEdge, GraphNode
 
 # Resolved at module load; tests can monkeypatch this attribute.
-_STORE_PATH: Path = Path(__file__).parent.parent.parent / "data" / ".store.json"
+# On Vercel (read-only fs), persist to /tmp instead of the bundled data dir.
+import os as _os
+if _os.environ.get("VERCEL"):
+    _STORE_PATH: Path = Path("/tmp/.store.json")
+else:
+    _STORE_PATH: Path = Path(__file__).parent.parent.parent / "data" / ".store.json"
 
 # In-memory state
 _nodes: dict[str, GraphNode] = {}          # id → GraphNode

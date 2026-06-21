@@ -24,6 +24,14 @@ _CONNECTORS: dict[str, type[Connector]] = {
     "teams": TeamsConnector,
 }
 
+# Connectors exposed by the frontend that don't yet have a fixture-backed
+# implementation. Returning an empty IngestResponse lets the UI animate the
+# connect button without surfacing a 404 to the user.
+_PLACEHOLDER_CONNECTORS = {
+    "github", "linear", "figma", "asana",
+    "discord", "dropbox", "trello", "gmail",
+}
+
 
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest(req: IngestRequest) -> IngestResponse:
@@ -37,6 +45,13 @@ async def ingest(req: IngestRequest) -> IngestResponse:
 async def ingest_connector(connector_name: str) -> IngestResponse:
     cls = _CONNECTORS.get(connector_name)
     if cls is None:
+        if connector_name in _PLACEHOLDER_CONNECTORS:
+            return IngestResponse(
+                ingested_id=str(uuid.uuid4()),
+                nodes_created=0,
+                edges_created=0,
+                chunk_count=0,
+            )
         raise HTTPException(status_code=404, detail=f"Connector '{connector_name}' not found")
     connector = cls()
     records = await connector.fetch()
