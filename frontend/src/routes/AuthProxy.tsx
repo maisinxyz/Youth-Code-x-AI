@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useConnectorsStore } from "../state/connectors";
 import type { ConnectorName } from "../lib/api";
 
+const DEMO_CONNECTORS: ConnectorName[] = ["slack", "notion", "drive", "confluence", "jira", "teams"];
+
 // ── Primary 6 connectors ─────────────────────────────────────────────
 const PRIMARY_CONNECTORS = [
   { id: "teams",      label: "Teams",         src: "/logos/teams.svg" },
@@ -120,11 +122,19 @@ import { WordmarkPanel } from "../panels/WordmarkPanel";
 // ── Main Auth Proxy Page ─────────────────────────────────────────────
 export default function AuthProxy() {
   const navigate = useNavigate();
-  const { connected, toggleConnector } = useConnectorsStore();
+  const { connected, toggleConnector, ingestConnector } = useConnectorsStore();
   const [showMore, setShowMore] = useState(false);
 
   const handleConnect = async (id: string) => {
     toggleConnector(id as ConnectorName);
+  };
+
+  const handleBuild = () => {
+    // Fire all 6 Meridian ingests in parallel (non-blocking) so the backend
+    // store is populated. Backend startup also seeds on first boot, but this
+    // ensures freshness if the store was cleared.
+    DEMO_CONNECTORS.forEach((name) => void ingestConnector(name));
+    navigate("/loading");
   };
 
   const totalConnected = connected.size;
@@ -244,7 +254,7 @@ export default function AuthProxy() {
 
           {/* Build your brain CTA */}
           <motion.button
-            onClick={() => navigate("/loading")}
+            onClick={handleBuild}
             disabled={!canProceed}
             className={`group inline-flex items-center gap-3 rounded-full py-2 pl-7 pr-2 font-mono text-sm font-medium transition-all duration-300 active:scale-[0.97]
               ${canProceed

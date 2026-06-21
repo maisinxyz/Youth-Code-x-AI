@@ -1,17 +1,20 @@
 """
 Query handler: canned answer → keyword fallback → structured QueryResponse.
-# === BACKBOARD SWAP POINT (Phase 5, §21) ===
-Replace the keyword scoring block with backboard_stub.query_assistant().
 """
 import uuid
 from datetime import datetime, timezone
 
 from app.models.schemas import QueryRequest, QueryResponse, Source
 from app.services import store
-from app.services.canned_answers import get_canned_answer, normalize_query
+from app.services.canned_answers import (
+    get_canned_answer,
+    get_follow_up_answer,
+    get_gratitude_response,
+    is_follow_up,
+    is_gratitude,
+)
 from app.services.graph_state import get_graph_state
 
-# Common English stopwords to ignore during keyword scoring
 _STOPWORDS = frozenset({
     "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
     "of", "with", "by", "is", "was", "are", "were", "be", "been", "being",
@@ -27,14 +30,12 @@ _TOP_K = 5
 
 
 def _tokenize(text: str) -> list[str]:
-    """Lowercase words, strip non-alpha, remove stopwords."""
     import re
     words = re.sub(r"[^\w\s]", " ", text.lower()).split()
     return [w for w in words if w not in _STOPWORDS and len(w) > 1]
 
 
 def _score_chunk(chunk_text: str, query_tokens: list[str]) -> float:
-    """TF-style overlap: count unique query tokens present in chunk."""
     chunk_words = set(_tokenize(chunk_text))
     return sum(1.0 for t in query_tokens if t in chunk_words)
 
@@ -57,38 +58,35 @@ def _build_source_from_chunk(chunk: dict) -> Source:
 
 async def handle_query(req: QueryRequest) -> QueryResponse:
     """
-    1. Try canned answer (demo safety net).
-    2. Keyword-score all stored chunks, take top-K.
-    3. Derive sources + activated_nodes from top chunks.
-    4. Build answer string from template.
-
-    # === BACKBOARD SWAP POINT (Phase 5, §21) ===
-    Replace step 2–4 with:
-        result = await backboard.query_assistant(
-            assistant_id=org.backboard_assistant_id,
-            thread_id=session_thread_id,
-            query=req.query,
-            memory="Auto",
-        )
-        return QueryResponse(
-            answer=result["answer"],
-            sources=result["sources"],
-            activated_nodes=...,
-            session_id=session_id,
-        )
+    1. Gratitude check  — "thanks", "great", etc.
+    2. Follow-up check  — "where was that?", "what's the source?" etc.
+    3. Canned answer    — short punchy answer for the 6 demo questions.
+    4. Keyword fallback — scored chunk retrieval.
     """
     session_id = req.session_id or str(uuid.uuid4())
 
-    # ── 1. Canned answer check ────────────────────────────────────────────────
+    # ── 1. Gratitude ─────────────────────────────────────────────────────────
+    if is_gratitude(req.query):
+        resp = get_gratitude_response(session_id)
+        if resp is not None:
+            return resp
+
+    # ── 2. Follow-up ─────────────────────────────────────────────────────────
+    if is_follow_up(req.query):
+        resp = get_follow_up_answer(session_id)
+        if resp is not None:
+            if resp.activated_nodes:
+                await get_graph_state().mark_active(resp.activated_nodes)
+            return resp
+
+    # ── 3. Canned answer ─────────────────────────────────────────────────────
     canned = get_canned_answer(req.query, session_id=session_id)
     if canned is not None:
-        # Stamp last_active on the canned activation set so the graph reflects
-        # the query in subsequent reads.
         if canned.activated_nodes:
             await get_graph_state().mark_active(canned.activated_nodes)
         return canned
 
-    # ── 2. Keyword scoring ────────────────────────────────────────────────────
+    # ── 4. Keyword scoring ───────────────────────────────────────────────────
     chunks = store.all_chunks()
     if not chunks:
         return QueryResponse(
@@ -111,13 +109,12 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
 
     if not top_chunks:
         return QueryResponse(
-            answer="No relevant content found for this query.",
+            answer="I don't have anything on that yet. Try asking about Atlas, Kafka, or the Q1 decisions.",
             sources=[],
             activated_nodes=[],
             session_id=session_id,
         )
 
-    # ── 3. Build sources + seed node IDs from top chunks ─────────────────────
     sources: list[Source] = []
     seed_node_ids: list[str] = []
     seen_source_ids: set[str] = set()
@@ -131,19 +128,14 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
             if nid not in seed_node_ids:
                 seed_node_ids.append(nid)
 
-    # ── 4. Expand activated_nodes via GraphState (1-hop, 3-8 cap) ────────────
     gs = get_graph_state()
     activated_node_ids = gs.activated_for_query(req.query, seed_node_ids)
     await gs.mark_active(activated_node_ids)
 
-    # ── 5. Generate answer ────────────────────────────────────────────────────
     connectors = list({s.type for s in sources})
-    connector_str = ", ".join(connectors) if connectors else "unknown"
+    connector_str = ", ".join(connectors) if connectors else "your sources"
     excerpt = top_chunks[0].get("text", "")[:200] if top_chunks else ""
-    answer = (
-        f"Based on {len(sources)} source(s) from {connector_str}: {excerpt}"
-        if sources else "No relevant content found for this query."
-    )
+    answer = f"Found {len(sources)} reference(s) in {connector_str}: {excerpt}"
 
     return QueryResponse(
         answer=answer,
