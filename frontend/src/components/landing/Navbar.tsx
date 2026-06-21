@@ -124,10 +124,10 @@ export function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex text-white/70">
-            <Link to="/connect">Log In</Link>
+            <Link to="/auth">Log In</Link>
           </Button>
           <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(42% 0.095 162)" }}>
-            <Link to="/connect">Get Started</Link>
+            <Link to="/waitlist">Get Started</Link>
           </Button>
         </div>
       </div>

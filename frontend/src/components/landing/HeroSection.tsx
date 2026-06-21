@@ -72,10 +72,10 @@ export function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
               >
                 <Link
-                  to="/connect"
+                  to="/waitlist"
                   className="group inline-flex items-center gap-2 self-start rounded-full bg-white py-1 pl-5 pr-1 text-sm font-medium text-black transition-all duration-150 hover:gap-3 active:scale-[0.97] sm:text-base"
                 >
-                  Login
+                  Join waitlist
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform duration-150 group-hover:scale-110 sm:h-10 sm:w-10">
                     <ArrowRight className="h-4 w-4 text-white" />
                   </span>

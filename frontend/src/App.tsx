@@ -1,9 +1,11 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
+import Auth from "./routes/Auth";
 import Connect from "./routes/Connect";
 import Landing from "./routes/Landing";
 import Loading from "./routes/Loading";
+import Waitlist from "./routes/Waitlist";
 
 const Brain = lazy(() => import("./routes/Brain"));
 
@@ -19,6 +21,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/waitlist" element={<Waitlist />} />
       <Route path="/connect" element={<Connect />} />
       <Route path="/loading" element={<Loading />} />
       <Route

@@ -57,7 +57,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="relative px-6 py-24 md:px-12 md:py-32"
+      className="relative px-6 pt-32 pb-10 md:px-12 md:pt-48 md:pb-12"
     >
       <div className="mx-auto max-w-6xl">
         <header className="mb-16 max-w-2xl">
