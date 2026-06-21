@@ -10,6 +10,7 @@ import Loading from "./routes/Loading";
 import Login from "./routes/Login";
 import SignUp from "./routes/SignUp";
 import Waitlist from "./routes/Waitlist";
+import WaitlistAdmin from "./routes/WaitlistAdmin";
 
 const Brain = lazy(() => import("./routes/Brain"));
 
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/waitlist-admin" element={<WaitlistAdmin />} />
         <Route path="/connect" element={<Connect />} />
         <Route path="/loading" element={<Loading />} />
         <Route

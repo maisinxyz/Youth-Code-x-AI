@@ -13,6 +13,7 @@ const COMPANY_LINKS = [
   { title: "Careers",        href: "#" },
   { title: "Privacy Policy", href: "#" },
   { title: "Terms of Service", href: "#" },
+  { title: "Developer Login", href: "/waitlist-admin" },
 ];
 
 const SOCIAL = [
@@ -99,9 +100,14 @@ export function FooterSection() {
                 <div>
                   <span className="mb-2 block font-mono text-[10px] uppercase tracking-widest text-white/25">Company</span>
                   <div className="flex flex-col gap-0.5">
-                    {COMPANY_LINKS.map(({ href, title }) => (
-                      <a key={title} href={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80">{title}</a>
-                    ))}
+                    {COMPANY_LINKS.map(({ href, title }) => {
+                      const isRoute = href.startsWith("/");
+                      return isRoute ? (
+                        <Link key={title} to={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80">{title}</Link>
+                      ) : (
+                        <a key={title} href={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80">{title}</a>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -145,9 +151,14 @@ export function FooterSection() {
             <div className="flex flex-col items-end">
               <span className="mb-2 block font-mono text-[10px] uppercase tracking-widest text-white/25">Company</span>
               <div className="flex flex-col gap-0.5 items-end">
-                {COMPANY_LINKS.map(({ href, title }) => (
-                  <a key={title} href={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80 md:text-right">{title}</a>
-                ))}
+                {COMPANY_LINKS.map(({ href, title }) => {
+                  const isRoute = href.startsWith("/");
+                  return isRoute ? (
+                    <Link key={title} to={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80 md:text-right">{title}</Link>
+                  ) : (
+                    <a key={title} href={href} className="w-max py-1 font-mono text-sm text-white/45 duration-150 hover:text-white/80 md:text-right">{title}</a>
+                  );
+                })}
               </div>
             </div>
           </div>
