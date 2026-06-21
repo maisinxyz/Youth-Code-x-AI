@@ -1,5 +1,5 @@
 import { BrainPreviewSection } from "../components/landing/BrainPreviewSection";
-import { ConnectorMosaic } from "../components/landing/ConnectorMosaic";
+import { ConnectSection } from "../components/landing/ConnectSection";
 import { CTASection } from "../components/landing/CTASection";
 import { HeroSection } from "../components/landing/HeroSection";
 import { HowItWorksSection } from "../components/landing/HowItWorksSection";
@@ -11,7 +11,7 @@ export default function Landing() {
       <HeroSection />
       <HowItWorksSection />
       <BrainPreviewSection />
-      <ConnectorMosaic />
+      <ConnectSection />
       <SplineSection />
       <CTASection />
     </main>
