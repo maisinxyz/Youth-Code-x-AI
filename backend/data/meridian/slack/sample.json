@@ -1,0 +1,32 @@
+[
+  {
+    "channel": "#engineering",
+    "user": "alice",
+    "text": "We decided to use Postgres over MongoDB for the Atlas project. ACID compliance is non-negotiable for the transaction ledger.",
+    "ts": "1709291400.0"
+  },
+  {
+    "channel": "#infrastructure",
+    "user": "bob",
+    "text": "Setting up Docker and Kubernetes for the Phoenix deployment. Alice approved the architecture yesterday.",
+    "ts": "1709291500.0"
+  },
+  {
+    "channel": "#frontend",
+    "user": "carol",
+    "text": "Switching the Atlas dashboard from JavaScript to TypeScript. Dave and I reviewed the React components — big improvement.",
+    "ts": "1709291600.0"
+  },
+  {
+    "channel": "#engineering",
+    "user": "alice",
+    "text": "We chose Redis for session caching in the Atlas API. Bob benchmarked it against Memcached and Redis won on throughput.",
+    "ts": "1709291700.0"
+  },
+  {
+    "channel": "#platform",
+    "user": "grace",
+    "text": "Grace here — I will own the Orion project going forward. We are standardising on Python and FastAPI across all backend services.",
+    "ts": "1709291800.0"
+  }
+]

@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 1 — Backend (§4 complete, §5 next)
+**Current phase:** Phase 1 — Backend (§5 complete, §6 next)
 
 ---
 
@@ -448,7 +448,7 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 - ✅ §2 Core API routes (contracts first)
 - ✅ §3 Ingestion pipeline
 - ✅ §4 Query handler
-- ⬜ §5 Connector modules
+- ✅ §5 Connector modules
 - ⬜ §6 Graph state manager
 - ⬜ §7 Backend end-to-end verification
 

@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Engineering Decisions — Q1 2024",
+    "body": "Postgres: chosen for Atlas by Alice. ACID compliance required. MongoDB ruled out.\nKafka: chosen for Phoenix by Bob. RabbitMQ hit throughput limits in load test.\nTypeScript: standardised across frontend. Carol led the migration from JavaScript.",
+    "space": "ENG",
+    "author": "carol",
+    "created_at": "2024-03-01T10:00:00Z"
+  },
+  {
+    "title": "Atlas Project — Technical Spec",
+    "body": "Owner: Alice. Stack: Postgres (primary DB), Redis (cache), Python/FastAPI (API layer), React/TypeScript (dashboard). Infra: Docker + Kubernetes managed by Bob. Status: in production as of March 2024.",
+    "space": "ENG",
+    "author": "alice",
+    "created_at": "2024-03-05T10:00:00Z"
+  },
+  {
+    "title": "Orion Integration Plan",
+    "body": "Orion connects the Phoenix Kafka pipeline to the Atlas Postgres database. Owner: Grace. Timeline: Q2 2024. Open question: whether to use Airflow or Prefect for orchestration. TBD.",
+    "space": "ENG",
+    "author": "grace",
+    "created_at": "2024-03-20T10:00:00Z"
+  }
+]

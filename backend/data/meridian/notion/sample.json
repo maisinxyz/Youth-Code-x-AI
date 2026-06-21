@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Architecture Decision Record: Database",
+    "content": "We selected Postgres as the primary database for Atlas. Key reasons: ACID compliance, mature ecosystem, Alice's prior experience with it at scale. MongoDB was ruled out due to eventual consistency concerns.",
+    "author": "alice",
+    "last_edited": "2024-03-01T10:00:00Z"
+  },
+  {
+    "title": "Q1 Engineering Decisions",
+    "content": "Three decisions made this quarter: (1) Postgres for Atlas, (2) Kafka for Phoenix event pipeline replacing RabbitMQ, (3) TypeScript standardisation across all frontend projects led by Carol.",
+    "author": "carol",
+    "last_edited": "2024-03-15T10:00:00Z"
+  },
+  {
+    "title": "Orion Project Brief",
+    "content": "Orion is the next-gen data pipeline project owned by Grace. It will use Python, Apache Airflow for orchestration, and write to Postgres. Bob is handling the Kubernetes deployment.",
+    "author": "grace",
+    "last_edited": "2024-03-20T10:00:00Z"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Q1 Tech Review — Meridian Engineering",
+    "extracted_text": "Summary of Q1 technology decisions. Alice led the database evaluation; Postgres was chosen for the Atlas project. Bob drove infrastructure, standardising on Docker and Kubernetes. The team agreed: Python for backend, TypeScript for frontend.",
+    "author": "bob",
+    "modified_at": "2024-03-31T10:00:00Z"
+  },
+  {
+    "title": "Phoenix Architecture Diagram (Notes)",
+    "extracted_text": "Phoenix uses Kafka for event streaming between microservices. Redis handles the session cache. Grace owns the Orion integration layer. Dave is responsible for the React-based monitoring dashboard.",
+    "author": "dave",
+    "modified_at": "2024-03-28T10:00:00Z"
+  },
+  {
+    "title": "Security Review — Atlas API",
+    "extracted_text": "Atlas API uses JWT for authentication via OAuth. Alice approved the security model. Open question: should we add rate limiting at the Nginx layer? TBD pending load test results from Bob.",
+    "author": "alice",
+    "modified_at": "2024-03-25T10:00:00Z"
+  }
+]

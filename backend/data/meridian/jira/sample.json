@@ -1,0 +1,34 @@
+[
+  {
+    "key": "ENG-101",
+    "summary": "Migrate Atlas DB from MongoDB to Postgres",
+    "description": "Alice is leading this migration. We decided to use Postgres for ACID compliance. Bob will handle the Kubernetes deployment changes. Target: end of Q1.",
+    "assignee": "alice",
+    "created": "2024-01-15T10:00:00Z",
+    "status": "Done"
+  },
+  {
+    "key": "ENG-102",
+    "summary": "Set up Kafka for Phoenix event pipeline",
+    "description": "Replace RabbitMQ with Kafka. Bob owns this. Grace will integrate the Orion consumer. Redis will be used as a dead-letter queue buffer.",
+    "assignee": "bob",
+    "created": "2024-02-01T10:00:00Z",
+    "status": "Done"
+  },
+  {
+    "key": "ENG-103",
+    "summary": "TypeScript migration — React frontend",
+    "description": "Carol is leading the JavaScript to TypeScript migration across all React components. Dave will review the dashboard components. Target: end of Q1.",
+    "assignee": "carol",
+    "created": "2024-02-10T10:00:00Z",
+    "status": "In Progress"
+  },
+  {
+    "key": "ENG-104",
+    "summary": "Atlas API security audit",
+    "description": "Review JWT and OAuth implementation in the Atlas API. Alice to approve final design. Open question: rate limiting at Nginx layer — TBD.",
+    "assignee": "alice",
+    "created": "2024-03-01T10:00:00Z",
+    "status": "In Progress"
+  }
+]

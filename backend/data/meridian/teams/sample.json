@@ -1,0 +1,20 @@
+[
+  {
+    "channel": "Engineering",
+    "user": "dave",
+    "text": "Confirmed with Alice: Postgres is the way forward for Atlas. We are dropping MongoDB. Bob will update the Docker compose files.",
+    "timestamp": "2024-03-01T10:00:00Z"
+  },
+  {
+    "channel": "Platform",
+    "user": "grace",
+    "text": "Orion project kicking off in Q2. Python and Airflow for the pipeline, Postgres as the sink. Grace will present the architecture to the team next week.",
+    "timestamp": "2024-03-15T10:00:00Z"
+  },
+  {
+    "channel": "Engineering",
+    "user": "carol",
+    "text": "TypeScript migration is on track. React components looking clean. Dave finished the dashboard. We decided to use Vite for the build system going forward.",
+    "timestamp": "2024-03-20T10:00:00Z"
+  }
+]
