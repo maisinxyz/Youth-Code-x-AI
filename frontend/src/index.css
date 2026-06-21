@@ -1,0 +1,25 @@
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/barlow-condensed/800.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full w-full;
+  }
+
+  body {
+    @apply bg-bg-base text-text-primary font-mono antialiased;
+    margin: 0;
+  }
+
+  .font-display {
+    @apply tracking-display;
+  }
+}

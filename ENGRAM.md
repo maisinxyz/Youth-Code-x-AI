@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 1 — Backend COMPLETE ✅ | Phase 2 next (§8 Frontend Shape Interview)
+**Current phase:** Phase 3 — Frontend §9 scaffold COMPLETE ✅ | §10 Landing page next
 
 ---
 
@@ -11,7 +11,7 @@
 
 | Layer | Choice |
 |---|---|
-| Frontend framework | React 18 + Vite + TypeScript |
+| Frontend framework | React 19 + Vite 8 + TypeScript 6 (scaffolded with `pnpm create vite`) |
 | 3D rendering | Three.js + @react-three/fiber + @react-three/drei + @react-three/postprocessing |
 | Frontend hosting | Vercel |
 | Styling | Tailwind CSS + design tokens (`design/tokens.json`) |
@@ -453,10 +453,10 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 - ✅ §7 Backend end-to-end verification
 
 ### Phase 2 — Shape Interview
-- ⬜ §8 Frontend shape interview & design brief
+- ✅ §8 Frontend shape interview & design brief (`DESIGN_BRIEF.md` + `design/tokens.json`)
 
 ### Phase 3 — Frontend
-- ⬜ §9 Frontend scaffold
+- ✅ §9 Frontend scaffold (Vite + React 19 + TS, Tailwind v3 token-mapped, react-router v7, Zustand, openapi-typescript types, Vercel SPA config)
 - ⬜ §10 Landing page
 - ⬜ §11 Connector selection screen
 - ⬜ §12 Brain loading animation
@@ -483,12 +483,12 @@ These need answers before their owning phase begins. Keep updated as resolved.
 
 | # | Question | Resolved? | Resolution |
 |---|---|---|---|
-| 1 | Three.js post-processing budget | ⬜ | (Phase 2 BRIEF) |
-| 2 | Graph layout: force-directed vs. hand-tuned | ⬜ | (Phase 2 BRIEF) |
+| 1 | Three.js post-processing budget | ✅ | UnrealBloom + ChromaticAberration full quality, lean fallback if GPU struggles (BRIEF §3 / tokens.postprocessing) |
+| 2 | Graph layout: force-directed vs. hand-tuned | ✅ | Spatially **sectioned by source** — each connector forms its own 3D cluster, not pure force-directed (BRIEF screen 1) |
 | 3 | ElevenLabs voice ID | ⬜ | (§20 polish) |
 | 4 | Final demo questions | ⬜ | (before §19) |
-| 5 | Node positions backend or frontend | ⬜ | (Phase 2 BRIEF — recommend frontend) |
+| 5 | Node positions backend or frontend | ✅ | Frontend (clusters laid out client-side per source section) |
 | 6 | Chunk overlap value (default 50 tokens) | ⬜ | (§19 dataset tuning) |
-| 7 | Ripple effect: shader vs. mesh | ⬜ | (Phase 2 BRIEF) |
-| 8 | Audio cue during loading sequence | ⬜ | (Phase 2 BRIEF) |
+| 7 | Ripple effect: shader vs. mesh | ✅ | Cascade animation: seed → 1-hop → 2-hop with `60-120ms` randomized hop delay, max 2 hops (tokens.animation.cascade) |
+| 8 | Audio cue during loading sequence | ⬜ | (open — BRIEF flagged as implementer decision) |
 | 9 | Multi-tenant scope on hackathon day | ⬜ | (before §22) |
