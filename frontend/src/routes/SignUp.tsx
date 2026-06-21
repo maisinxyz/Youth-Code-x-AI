@@ -21,6 +21,9 @@ export default function SignUp() {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     });
   };

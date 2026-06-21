@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
 import { useConnectorsStore } from "../state/connectors";
 import type { ConnectorName } from "../lib/api";
 
@@ -45,13 +44,14 @@ function ConnectorCard({
   const handleClick = () => {
     if (connecting) return;
     if (connected) {
-      // Disconnecting is instant
       onConnect();
       return;
     }
     setConnecting(true);
-    // Immediately start OAuth flow without fake timeout
-    onConnect();
+    setTimeout(() => {
+      setConnecting(false);
+      onConnect();
+    }, 400 + Math.random() * 300);
   };
 
   return (
@@ -120,82 +120,12 @@ import { WordmarkPanel } from "../panels/WordmarkPanel";
 // ── Main Auth Page ───────────────────────────────────────────────────
 export default function Auth() {
   const navigate = useNavigate();
-  const { connected, toggleConnector, setConnected } = useConnectorsStore();
+  const { connected, toggleConnector } = useConnectorsStore();
   const [showMore, setShowMore] = useState(false);
 
-  const handleConnect = async (id: string) => {
-    // Map your custom connector IDs to Supabase provider names
-    const providerMapping: Record<string, any> = {
-      slack: 'slack',
-      notion: 'notion',
-      github: 'github',
-      drive: 'google',
-      discord: 'discord',
-      figma: 'figma'
-    };
-
-    const provider = providerMapping[id];
-    if (!provider) {
-      console.warn(`Provider ${id} is not configured for Supabase OAuth mapping yet.`);
-      return;
-    }
-
-    try {
-      // Trigger Supabase OAuth
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          // Return back to the /auth page instead of /auth/callback since there is no callback route
-          redirectTo: `${window.location.origin}/auth`,
-        },
-      });
-
-      if (error) {
-        console.error("Error connecting to provider:", error.message);
-      }
-    } catch (err) {
-      console.warn("Supabase integration is mocked or not fully configured.", err);
-    }
+  const handleConnect = (id: string) => {
+    toggleConnector(id as ConnectorName);
   };
-
-  useEffect(() => {
-    // Helper to map Supabase providers back to our app's connector IDs
-    const updateConnectedFromProviders = (providers: string[]) => {
-      const reverseMapping: Record<string, string> = {
-        'google': 'drive',
-        'slack': 'slack',
-        'notion': 'notion',
-        'github': 'github',
-        'discord': 'discord',
-        'figma': 'figma'
-      };
-      const connectedIds = providers.map(p => reverseMapping[p]).filter(Boolean);
-      setConnected(new Set(connectedIds as ConnectorName[]));
-    };
-
-    // On mount, start with empty state for real auth flow
-    setConnected(new Set());
-
-    // Check existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.app_metadata?.providers) {
-        updateConnectedFromProviders(session.user.app_metadata.providers);
-      }
-    });
-
-    // Listen for auth events (e.g. returning from OAuth redirect)
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user?.app_metadata?.providers) {
-          updateConnectedFromProviders(session.user.app_metadata.providers);
-        }
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [setConnected]);
 
   const totalConnected = connected.size;
   const canProceed = totalConnected >= 1;

@@ -20,7 +20,10 @@ export default function Login() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth-proxy`,
+        redirectTo: `${window.location.origin}/auth`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     });
   };
