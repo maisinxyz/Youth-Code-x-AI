@@ -7,8 +7,8 @@ from app.config import settings
 
 router = APIRouter()
 
-# Default voice: "Rachel" — clear, neutral, demo-friendly
-_DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"
+# Default voice: "Adam" — clear, professional, male voice
+_DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"
 
 
 class TTSRequest(BaseModel):
