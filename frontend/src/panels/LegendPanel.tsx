@@ -10,9 +10,9 @@ const TYPES = [
 
 const GLASS = {
   background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(124, 58, 237, 0.15)",
+  border: "1px solid rgba(223, 155, 91, 0.15)",
   backdropFilter: "blur(16px)",
-  boxShadow: "0 4px 24px -4px rgba(124, 58, 237, 0.15)", // Featherlight purple tinted shadow
+  boxShadow: "0 4px 24px -4px rgba(223, 155, 91, 0.15)", // Featherlight purple tinted shadow
 };
 
 export function LegendPanel() {

@@ -34,7 +34,7 @@ function ThinkingState() {
           animate={{ rotate: [0, 8, -8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Sparkles size={14} className="text-purple-400/70" />
+          <Sparkles size={14} className="text-[#df9b5b]/70" />
         </motion.div>
         <span className="font-mono text-xs text-white/40">Searching knowledge graph…</span>
       </div>
@@ -46,7 +46,7 @@ function ThinkingState() {
             style={{
               width: `${width}%`,
               background:
-                "linear-gradient(90deg, rgba(124,58,237,0.06), rgba(124,58,237,0.15), rgba(124,58,237,0.06))",
+                "linear-gradient(90deg, rgba(223, 155, 91, 0.06), rgba(223, 155, 91, 0.15), rgba(223, 155, 91, 0.06))",
               backgroundSize: "200% 100%",
             }}
             animate={{ backgroundPosition: ["0% 0%", "200% 0%"] }}
@@ -78,7 +78,7 @@ function SourceCard({
                  hover:bg-white/[0.04]"
       style={{ border: "1px solid rgba(255,255,255,0.04)" }}
     >
-      <FileText size={12} className="text-purple-400/50 flex-shrink-0" />
+      <FileText size={12} className="text-[#df9b5b]/50 flex-shrink-0" />
       <span className="font-mono text-[11px] text-white/45 group-hover:text-white/70 truncate flex-1 transition-colors">
         {source.title}
       </span>
@@ -131,8 +131,8 @@ function ResizeHandle({
 
   const base = "absolute z-40";
   const styles: Record<string, string> = {
-    left: `${base} left-0 top-0 bottom-0 w-1.5 cursor-ew-resize hover:bg-purple-500/20 transition-colors`,
-    top: `${base} left-0 right-0 top-0 h-1.5 cursor-ns-resize hover:bg-purple-500/20 transition-colors`,
+    left: `${base} left-0 top-0 bottom-0 w-1.5 cursor-ew-resize hover:bg-[#df9b5b]/20 transition-colors`,
+    top: `${base} left-0 right-0 top-0 h-1.5 cursor-ns-resize hover:bg-[#df9b5b]/20 transition-colors`,
     "top-left": `${base} left-0 top-0 w-3 h-3 cursor-nwse-resize`,
   };
 
@@ -254,7 +254,7 @@ export function ResponsePanel({
             className="rounded-2xl overflow-hidden flex flex-col relative"
             style={{
               background: "rgba(8, 8, 16, 0.65)",
-              border: "1px solid rgba(124, 58, 237, 0.12)",
+              border: "1px solid rgba(223, 155, 91, 0.12)",
               backdropFilter: "blur(28px)",
               boxShadow:
                 "0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)",
@@ -298,13 +298,13 @@ export function ResponsePanel({
                       : {}
                   }
                 >
-                  <Sparkles size={12} className="text-purple-400/60" />
+                  <Sparkles size={12} className="text-[#df9b5b]/60" />
                 </motion.div>
                 <span className="font-mono text-[10px] text-white/35 uppercase tracking-wider">
                   {isPending ? "Thinking" : "Response"}
                 </span>
                 {!isPending && activatedCount > 0 && !isMinimized && (
-                  <span className="font-mono text-[9px] text-purple-400/40 ml-1">
+                  <span className="font-mono text-[9px] text-[#df9b5b]/40 ml-1">
                     · {activatedCount} nodes
                   </span>
                 )}
@@ -368,7 +368,7 @@ export function ResponsePanel({
                           {displayedText}
                           {!isDone && (
                             <motion.span
-                              className="ml-0.5 inline-block h-3.5 w-px align-middle bg-purple-400/70"
+                              className="ml-0.5 inline-block h-3.5 w-px align-middle bg-[#df9b5b]/70"
                               animate={{ opacity: [1, 0] }}
                               transition={{
                                 duration: 0.5,
@@ -398,9 +398,9 @@ export function ResponsePanel({
                                       className="rounded-md px-2 py-1 font-mono text-[9px] text-white/35
                                                  hover:text-white/60 transition-colors"
                                       style={{
-                                        background: "rgba(124, 58, 237, 0.06)",
+                                        background: "rgba(223, 155, 91, 0.06)",
                                         border:
-                                          "1px solid rgba(124, 58, 237, 0.08)",
+                                          "1px solid rgba(223, 155, 91, 0.08)",
                                       }}
                                     >
                                       {src.title}
@@ -409,10 +409,10 @@ export function ResponsePanel({
                                 {lastResponse.sources.length > 3 && (
                                   <button
                                     onClick={() => setShowSources(true)}
-                                    className="rounded-md px-2 py-1 font-mono text-[9px] text-purple-400/40 hover:text-purple-400/70 transition-colors"
+                                    className="rounded-md px-2 py-1 font-mono text-[9px] text-[#df9b5b]/40 hover:text-[#df9b5b]/70 transition-colors"
                                     style={{
                                       border:
-                                        "1px solid rgba(124, 58, 237, 0.08)",
+                                        "1px solid rgba(223, 155, 91, 0.08)",
                                     }}
                                   >
                                     +{lastResponse.sources.length - 3} more
@@ -474,11 +474,11 @@ export function ResponsePanel({
                     disabled={activatedCount === 0}
                     className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 font-mono text-[10px]
                                transition-all duration-200 disabled:opacity-25 disabled:cursor-not-allowed
-                               hover:bg-purple-500/15"
+                               hover:bg-[#df9b5b]/15"
                     style={{
-                      background: "rgba(124, 58, 237, 0.08)",
-                      border: "1px solid rgba(124, 58, 237, 0.15)",
-                      color: "rgba(167, 139, 250, 0.7)",
+                      background: "rgba(223, 155, 91, 0.08)",
+                      border: "1px solid rgba(223, 155, 91, 0.15)",
+                      color: "rgba(223, 155, 91, 0.7)",
                     }}
                   >
                     <Focus size={11} />

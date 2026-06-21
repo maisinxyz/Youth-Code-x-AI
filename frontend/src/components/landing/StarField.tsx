@@ -58,7 +58,7 @@ export function StarField() {
   return (
     <motion.div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-30"
+      className="pointer-events-none fixed inset-0 z-0"
       style={{ mixBlendMode: "screen" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: visible ? 1 : 0 }}

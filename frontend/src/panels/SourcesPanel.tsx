@@ -25,7 +25,7 @@ const ALL_CONNECTORS: ConnectorName[] = [
 
 const GLASS = {
   background: "rgba(0,0,0,0.55)",
-  border: "1px solid rgba(124, 58, 237, 0.15)",
+  border: "1px solid rgba(223, 155, 91, 0.15)",
   backdropFilter: "blur(12px)",
 };
 

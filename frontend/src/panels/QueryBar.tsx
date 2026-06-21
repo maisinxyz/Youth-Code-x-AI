@@ -100,7 +100,7 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
       <div 
         className="pointer-events-none absolute bottom-[-32px] left-1/2 -translate-x-1/2 h-[300px] w-[800px]"
         style={{
-          background: "radial-gradient(ellipse at bottom, rgba(124,58,237,0.15) 0%, transparent 60%)",
+          background: "radial-gradient(ellipse at bottom, rgba(223, 155, 91, 0.15) 0%, transparent 60%)",
           zIndex: -1,
         }}
       />
@@ -109,10 +109,10 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
         className="flex items-center gap-3 rounded-full px-5 py-3.5 transition-all duration-300"
         style={{
           background: "rgba(0,0,0,0.7)",
-          border: "1px solid rgba(124, 58, 237, 0.4)",
+          border: "1px solid rgba(223, 155, 91, 0.4)",
           backdropFilter: "blur(20px)",
           minWidth: "560px",
-          boxShadow: "inset 0 0 16px rgba(124, 58, 237, 0.0), 0 0 16px rgba(124, 58, 237, 0.15)",
+          boxShadow: "inset 0 0 16px rgba(223, 155, 91, 0.0), 0 0 16px rgba(223, 155, 91, 0.15)",
           animation: "capsulePulse 4s ease-in-out infinite",
         }}
       >
@@ -152,7 +152,7 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
             <Mic
               size={14}
               className="relative z-10 transition-colors duration-150"
-              style={{ color: "#8266ad" }}
+              style={{ color: "#df9b5b" }}
             />
           )}
         </button>
@@ -214,9 +214,9 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
           100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
         }
         @keyframes capsulePulse {
-          0%   { border-color: rgba(124, 58, 237, 0.3); box-shadow: inset 0 0 0 rgba(124,58,237,0), 0 0 12px rgba(124,58,237,0.1); }
-          50%  { border-color: rgba(124, 58, 237, 0.6); box-shadow: inset 0 0 12px rgba(124,58,237,0.2), 0 0 24px rgba(124,58,237,0.25); }
-          100% { border-color: rgba(124, 58, 237, 0.3); box-shadow: inset 0 0 0 rgba(124,58,237,0), 0 0 12px rgba(124,58,237,0.1); }
+          0%   { border-color: rgba(223, 155, 91, 0.3); box-shadow: inset 0 0 0 rgba(223, 155, 91, 0), 0 0 12px rgba(223, 155, 91, 0.1); }
+          50%  { border-color: rgba(223, 155, 91, 0.6); box-shadow: inset 0 0 12px rgba(223, 155, 91, 0.2), 0 0 24px rgba(223, 155, 91, 0.25); }
+          100% { border-color: rgba(223, 155, 91, 0.3); box-shadow: inset 0 0 0 rgba(223, 155, 91, 0), 0 0 12px rgba(223, 155, 91, 0.1); }
         }
       `}</style>
     </motion.div>
