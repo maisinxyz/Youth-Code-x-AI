@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 
 from app.models.schemas import GraphEdge, GraphNode, IngestRequest, IngestResponse, NodeType
 from app.services import backboard_stub, store
+from app.services.graph_state import get_graph_state
 from app.services.entity_dictionary import (
     DECISION_KEYWORDS,
     OPEN_QUESTION_PATTERNS,
@@ -225,6 +226,9 @@ async def process_ingest(req: IngestRequest) -> IngestResponse:
             "text": chunk,
             "node_ids": node_ids_in_chunk,
         })
+
+        # Mark nodes active on ingest so last_active reflects freshness
+        await get_graph_state().mark_active(node_ids_in_chunk)
 
         # BACKBOARD_PLACEHOLDER — upload_document_to_assistant() wired in Phase 5 §21
         await backboard_stub.upload_document_to_assistant(

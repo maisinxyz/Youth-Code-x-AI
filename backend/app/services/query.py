@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from app.models.schemas import QueryRequest, QueryResponse, Source
 from app.services import store
 from app.services.canned_answers import get_canned_answer, normalize_query
+from app.services.graph_state import get_graph_state
 
 # Common English stopwords to ignore during keyword scoring
 _STOPWORDS = frozenset({
@@ -117,9 +118,9 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
         # No keyword overlap — return graceful fallback
         top_chunks = [chunks[0]] if chunks else []
 
-    # ── 3. Build sources + activated_nodes ────────────────────────────────────
+    # ── 3. Build sources + seed node IDs from top chunks ─────────────────────
     sources: list[Source] = []
-    activated_node_ids: list[str] = []
+    seed_node_ids: list[str] = []
     seen_source_ids: set[str] = set()
 
     for chunk in top_chunks:
@@ -128,10 +129,15 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
             sources.append(src)
             seen_source_ids.add(src.source_id)
         for nid in chunk.get("node_ids", []):
-            if nid not in activated_node_ids:
-                activated_node_ids.append(nid)
+            if nid not in seed_node_ids:
+                seed_node_ids.append(nid)
 
-    # ── 4. Generate answer ────────────────────────────────────────────────────
+    # ── 4. Expand activated_nodes via GraphState (1-hop, 3-8 cap) ────────────
+    gs = get_graph_state()
+    activated_node_ids = gs.activated_for_query(req.query, seed_node_ids)
+    await gs.mark_active(activated_node_ids)
+
+    # ── 5. Generate answer ────────────────────────────────────────────────────
     connectors = list({s.type for s in sources})
     connector_str = ", ".join(connectors) if connectors else "unknown"
     excerpt = top_chunks[0].get("text", "")[:200] if top_chunks else ""

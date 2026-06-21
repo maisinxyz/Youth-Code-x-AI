@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 1 — Backend (§5 complete, §6 next)
+**Current phase:** Phase 1 — Backend COMPLETE ✅ | Phase 2 next (§8 Frontend Shape Interview)
 
 ---
 
@@ -449,8 +449,8 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 - ✅ §3 Ingestion pipeline
 - ✅ §4 Query handler
 - ✅ §5 Connector modules
-- ⬜ §6 Graph state manager
-- ⬜ §7 Backend end-to-end verification
+- ✅ §6 Graph state manager
+- ✅ §7 Backend end-to-end verification
 
 ### Phase 2 — Shape Interview
 - ⬜ §8 Frontend shape interview & design brief
