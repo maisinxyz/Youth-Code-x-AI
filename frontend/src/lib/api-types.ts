@@ -126,6 +126,8 @@ export interface components {
             weight: number;
             /** Last Active */
             last_active?: string | null;
+            /** Source Type */
+            source_type?: string | null;
         };
         /** GraphResponse */
         GraphResponse: {

@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 3 — Frontend §9–§13 COMPLETE ✅ | §14 Query reaction animations next
+**Current phase:** Phase 4 COMPLETE ✅ | §1–§20 done | Next: Phase 5 — Hackathon integrations (§21 Backboard, §22 Supabase)
 
 ---
 
@@ -460,17 +460,16 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 - ✅ §10 Landing page — PrismaHero exact (cinematic video bg, rounded container, giant ENGRAM wordmark, cream text, white CTA), HowItWorks, BrainPreview (ContainerScroll + MiniBrain R3F Bloom 80-node sphere), ConnectorMosaic (official logos), SplineSection (full-bleed with parallax text), CTA → /connect. All green removed — pure black/white SaaS palette throughout.
 - ✅ §11 Connector selection screen — FallingPattern bg, 6 cards with full-color official brand logos in /public/logos/ (img tags), framer-motion stagger + pulse on select, "Select all" convenience, "Build your brain →" CTA → /loading
 - ✅ §12 Brain loading animation — 220 R3F particles rain from top → converge to fibonacci-sphere node positions → crystallize with Bloom burst → edges draw sequentially via native THREE.Line → auto-navigate to /brain at t=6.5s, skip-on-click
-- ⬜ §12 Brain loading animation
 - ✅ §13 Three.js semantic graph — src/scene/: BrainScene, NodeMesh (octahedron + idle bob/breathe/rotate), EdgeMesh (drei Line, opacity by strength), CameraRig (OrbitControls, autoRotate 0.35), Postprocessing (Bloom 1.1 + ChromaticAberration), layout.ts (fibonacci sphere + 50-iter spring relaxation), makeDemoGraph() fallback (40 nodes, 30 edges). Brain.tsx updated with full-screen canvas + wordmark + placeholder query bar.
-- ⬜ §14 Three.js — query reaction animations
-- ⬜ §15 Floating UI panels
-- ⬜ §16 Voice input + output
-- ⬜ §17 Source drawer
+- ✅ §14 Three.js — query reaction animations
+- ✅ §15 Floating UI panels
+- ✅ §16 Voice input + output
+- ✅ §17 Source drawer
 
 ### Phase 4 — Wire + Demo Data
-- ⬜ §18 Frontend ↔ backend wiring
-- ⬜ §19 Meridian mock dataset
-- ⬜ §20 Polish pass
+- ✅ §18 Frontend ↔ backend wiring
+- ✅ §19 Meridian mock dataset (Meridian company — 6 connectors, 6 canned Q&As with rich sources)
+- ✅ §20 Polish pass
 
 ### Phase 5 — Hackathon Integrations
 - ⬜ §21 Backboard integration

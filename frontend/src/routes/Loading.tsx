@@ -3,6 +3,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useConnectorsStore } from "../state/connectors";
+import type { ConnectorName } from "../lib/api";
 import * as THREE from "three";
 
 // ─── Brain topology ────────────────────────────────────────────────────────
@@ -298,13 +300,21 @@ function Scene({ elapsed, skipped, onDone }: {
   );
 }
 
+const ALL_CONNECTORS: ConnectorName[] = ["slack", "notion", "drive", "confluence", "jira", "teams"];
+
 // ─── Route ────────────────────────────────────────────────────────────────
 export default function Loading() {
   const navigate = useNavigate();
   const [skipped, setSkipped] = useState(false);
   const elapsed = useRef(0);
+  const { ingestConnector } = useConnectorsStore();
 
   const [label, setLabel] = useState("Ingesting sources");
+
+  // Kick off all connector ingests in parallel when the loading screen mounts
+  useEffect(() => {
+    ALL_CONNECTORS.forEach((name) => { void ingestConnector(name); });
+  }, [ingestConnector]);
 
   useEffect(() => {
     const t1 = setTimeout(() => setLabel("Building semantic graph"), T_RAIN * 1000);

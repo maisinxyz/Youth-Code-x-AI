@@ -20,6 +20,7 @@ class GraphNode(BaseModel):
     connections: list[str] = Field(default_factory=list)
     weight: float = 0.0
     last_active: datetime | None = None
+    source_type: str | None = None  # connector source: slack | notion | drive | ...
 
 
 class GraphEdge(BaseModel):

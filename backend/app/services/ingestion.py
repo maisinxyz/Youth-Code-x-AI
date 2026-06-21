@@ -201,6 +201,7 @@ async def process_ingest(req: IngestRequest) -> IngestResponse:
                 connections=[],
                 weight=0.1,
                 last_active=datetime.now(timezone.utc),
+                source_type=req.source_type,
             )
             upserted, was_created = store.upsert_node(node)
             if was_created:
