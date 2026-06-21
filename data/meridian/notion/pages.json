@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Atlas Project Overview",
+    "content": "Atlas is Meridian's core transaction ledger service, launched in Q1 2024. It is built on Postgres for ACID-compliant transaction processing. Alice is the project lead. Bob handles the Phoenix Kafka event stream integration. The Atlas Postgres database handles all financial transactions with full ACID compliance — this was a deliberate decision over MongoDB, which was rejected for its eventual consistency model.\n\nArchitecture: Postgres primary (writes), Postgres read replica (reporting), Redis cache (hot data), Elasticsearch (full-text search). API: FastAPI with both REST and GraphQL endpoints. Authentication: OAuth and JWT.\n\nQ1 milestones: Postgres schema locked, 12k TPS in production, integrated with Phoenix Kafka, Horizon dashboard beta launched. Q2 targets: 50k TPS, Elasticsearch integration, Apex export feature.",
+    "last_edited": "2024-03-15T10:00:00Z",
+    "author": "alice"
+  },
+  {
+    "title": "Q1 2024 Architecture Decision Records",
+    "content": "ADR-001: Postgres over MongoDB for Atlas\nDecision: We chose Postgres over MongoDB for the Atlas transaction ledger. Rationale: ACID compliance is non-negotiable for financial transactions. MongoDB's eventual consistency model was evaluated and rejected. Alice led the two-week evaluation. The team agreed on Postgres unanimously.\n\nADR-002: Kafka over RabbitMQ for Phoenix\nDecision: We migrated Phoenix event streaming from RabbitMQ to Kafka. Rationale: RabbitMQ hit its throughput ceiling at 80k messages per second. Kafka scales horizontally to 600k+ msg/s. Bob led the Phoenix migration.\n\nADR-003: TypeScript standardization for Horizon\nDecision: All frontend code at Meridian will use TypeScript. No plain JavaScript in the codebase. Carol led the initiative after the maintenance pain of mixed JS/TS in the early Horizon codebase. ESLint enforces TypeScript strict mode.\n\nADR-004: PyTorch over TensorFlow for Orion\nDecision: Orion ML service uses PyTorch. Dave evaluated both frameworks — PyTorch's dynamic computation graph and the team's existing expertise made it the clear choice.\n\nADR-005: Kubernetes on GCP for Titan\nDecision: All Meridian services run on Kubernetes on Google Cloud Platform. Frank migrated from AWS EC2. GCP enterprise agreement signed. GKE Autopilot reduces node pool management overhead.",
+    "last_edited": "2024-03-01T10:00:00Z",
+    "author": "alice"
+  },
+  {
+    "title": "Phoenix Event Streaming Architecture",
+    "content": "Phoenix is Meridian's event streaming pipeline built on Kafka. Bob leads Phoenix. The migration from RabbitMQ to Kafka was completed in Q1 2024 after RabbitMQ topped out at 80k messages per second during the Q4 load test. Kafka now handles 600k+ messages per second with horizontal scalability.\n\nKafka cluster: 3 brokers on Kubernetes (Titan), KRaft mode (no Zookeeper). Topics: atlas-events (24 partitions), orion-predictions (12 partitions), horizon-notifications (6 partitions). Replication factor: 3.\n\nConsumers: Atlas uses Kafka for event sourcing, Orion consumes Atlas events for ML training data, Horizon subscribes to Kafka topics for real-time dashboard updates via WebSockets. All consumer groups have dedicated lag monitoring in Grafana.\n\nPhoenix integration with Prism: Bob designed the Kafka Streams layer that feeds Prism's real-time analytics. The stream processing aggregates Atlas transaction events in real-time.",
+    "last_edited": "2024-02-14T10:00:00Z",
+    "author": "bob"
+  },
+  {
+    "title": "Horizon Dashboard Product Spec",
+    "content": "Horizon is the customer-facing dashboard for the Meridian platform. Carol leads the product and engineering. Built with React and TypeScript throughout — this was a deliberate decision standardized on TypeScript in Q1 2024.\n\nStack: React (frontend framework), TypeScript (language), GraphQL (external API), REST (internal services), Kafka WebSocket (real-time updates), Radix UI (component primitives), recharts (data visualization).\n\nKey features (v1): Transaction history from Atlas Postgres, real-time Kafka event notifications, Orion ML prediction panel, Prism analytics charts, Atlas search via Elasticsearch, feature flag management (Redis-backed).\n\nDesign: Skyler owns Figma designs, Tyler implements the TypeScript component library in Storybook. All 47 components are documented. The design system uses semantic tokens for Atlas transaction states and Phoenix Kafka states.\n\nV2 roadmap: international localization (i18next, Q4), mobile PWA improvements, Zenith customer success portal integration, Nexus API gateway integration.",
+    "last_edited": "2024-03-15T10:00:00Z",
+    "author": "carol"
+  },
+  {
+    "title": "Orion ML Service Design",
+    "content": "Orion is Meridian's machine learning service for transaction prediction and anomaly detection. Dave leads the service, Sam supports ML research.\n\nStack: PyTorch (model training and inference), FastAPI (service layer), Airflow (training pipeline orchestration on Kubernetes), GCP (T4 GPU instances for training), Google Cloud Storage (model artifacts), Pinecone (vector store), LangChain (natural language query interface, Q3 roadmap).\n\nDecision rationale — PyTorch over TensorFlow: Dave evaluated both. PyTorch's dynamic computation graph is better suited for the research-to-production workflow. Team expertise was also a factor — 3 of 4 ML team members have prior PyTorch experience.\n\nCurrent model: 96% prediction accuracy on production dataset (as of Q1 2024). Inference latency: under 60ms via the FastAPI endpoint. The model is trained on Atlas Postgres transaction data consumed via Phoenix Kafka.\n\nQ2 plan: General availability. Q3 plan: custom fine-tuning for enterprise customers. Q4 plan: LangChain integration for natural language queries over Atlas and Phoenix data.",
+    "last_edited": "2024-03-01T10:00:00Z",
+    "author": "dave"
+  },
+  {
+    "title": "Titan Infrastructure Runbook",
+    "content": "Titan is Meridian's infrastructure layer managed by Frank, with Hiro supporting. All services run on Kubernetes on GCP (GKE Autopilot). Docker is used for all service containerization.\n\nInfrastructure: Terraform manages all GCP resources. The Terraform state is in GCS. All environments (dev, staging, production) are defined as Terraform workspaces. Frank is the Terraform owner.\n\nServices on Kubernetes: Atlas (FastAPI, 3 replicas min, HPA to 30), Phoenix (Kafka consumers, 2 replicas min, HPA to 20), Orion (FastAPI, 2 replicas min), Horizon (React SPA on Nginx, 2 replicas min), Nexus (Nginx gateway, 3 replicas). All services have resource requests and limits defined.\n\nObservability: Prometheus scrapes all services. Grafana dashboards for each service. Sentry for error tracking. Datadog APM for Phoenix Kafka consumer performance. PagerDuty for on-call alerting — Alice for Atlas, Bob for Phoenix, Carol for Horizon, Dave for Orion, Frank for Titan.\n\nSecurity: JWT secrets rotated quarterly (next rotation: June 1). GCP IAM roles follow least privilege. OAuth handled by the Nexus gateway. GitHub secrets for CI/CD managed by Frank.",
+    "last_edited": "2024-03-15T10:00:00Z",
+    "author": "frank"
+  },
+  {
+    "title": "Meridian Q1 2024 OKRs",
+    "content": "Q1 2024 Objectives and Key Results:\n\nObjective 1: Launch production-grade transaction ledger\nKR1: Atlas serving 10k+ TPS in production — ACHIEVED (12k TPS)\nKR2: Postgres ACID compliance verified via load test — ACHIEVED\nKR3: Zero data loss incidents in production — ACHIEVED\nOwner: Alice\n\nObjective 2: Real-time event streaming at scale\nKR1: Phoenix migrated from RabbitMQ to Kafka — ACHIEVED\nKR2: Kafka handling 500k+ messages per second — ACHIEVED (600k msg/s)\nKR3: All Atlas events flowing to Phoenix — ACHIEVED\nOwner: Bob\n\nObjective 3: Horizon beta launch\nKR1: Horizon React TypeScript dashboard live for 50 beta users — ACHIEVED\nKR2: Sub-100ms API response times — ACHIEVED (GraphQL p99: 87ms)\nKR3: TypeScript strict mode across all Horizon code — ACHIEVED\nOwner: Carol\n\nObjective 4: Orion ML alpha\nKR1: PyTorch model trained on Atlas production data — ACHIEVED\nKR2: Orion inference latency under 100ms — ACHIEVED (58ms)\nKR3: 90%+ prediction accuracy — ACHIEVED (94%)\nOwner: Dave\n\nObjective 5: Kubernetes infrastructure\nKR1: All services containerized and on GKE — ACHIEVED\nKR2: GCP enterprise agreement signed — ACHIEVED\nKR3: Terraform managing all infra — ACHIEVED\nOwner: Frank",
+    "last_edited": "2024-04-01T10:00:00Z",
+    "author": "eve"
+  },
+  {
+    "title": "Prism Real-Time Analytics Spec",
+    "content": "Prism is Meridian's real-time analytics layer, led by Morgan. Q2 GA target.\n\nArchitecture decision: Kafka Streams for real-time processing, Postgres for persistence. Alice and Bob co-designed the architecture after a debate between batch Postgres queries (Alice's initial proposal) and stream processing (Bob's proposal). Hybrid approach was agreed: Kafka Streams for real-time aggregates, results materialized into Postgres for historical queries.\n\nData sources: Atlas Postgres (transaction events via Phoenix Kafka), Orion predictions (via Phoenix Kafka topics), Horizon user activity events.\n\nKey features: Real-time transaction volume by category, Orion prediction accuracy trends, Kafka consumer lag visibility, Atlas Postgres write throughput charts. Carol's Horizon TypeScript components render all Prism visualizations.\n\nQ2 deliverables: Prism GA with 10 aggregate chart types, Kafka Streams topology documented, Postgres persistence schema finalized, Horizon dashboard updated by Carol, Apex export feature for Prism data.",
+    "last_edited": "2024-03-01T10:00:00Z",
+    "author": "morgan"
+  },
+  {
+    "title": "Hiring Loop Documentation",
+    "content": "Meridian engineering hiring process (Q1-Q2 2024).\n\nOpen roles as of Q1 2024:\n- Senior Backend Engineer — Atlas team, working with Alice on Postgres performance and transaction ledger scaling. Requirements: Postgres expert, FastAPI, Python 3.11+, experience with ACID transaction systems.\n- Senior ML Engineer — Orion team, working with Dave on PyTorch models and GCP ML infrastructure. Requirements: PyTorch, Airflow, Kubernetes, GCP AI Platform.\n- DevOps Engineer — Titan team, working with Frank on Kubernetes and Terraform. Requirements: GKE, Terraform, Docker, Prometheus, Grafana.\n- Frontend Engineer — Horizon team, working with Carol on React TypeScript dashboard. Requirements: TypeScript strict mode, React, GraphQL, WebSockets.\n\nProcess: 4-stage interview — recruiter screen (Quinn), technical screen (domain-specific), system design (Alice/Bob/Carol/Dave/Frank), bar raiser (Eve). Decision must be unanimous among interviewers. Offer approved by Eve and finance.",
+    "last_edited": "2024-02-01T10:00:00Z",
+    "author": "quinn"
+  },
+  {
+    "title": "Meridian Customer Research — Enterprise Segment",
+    "content": "Customer research conducted by Blake and Eve, Q1 2024. 20 enterprise customer interviews.\n\nTop purchase decision factors:\n1. ACID compliance (mentioned by 18/20 customers) — Competitors using MongoDB have caused data consistency issues. Postgres for Atlas is Meridian's primary differentiator.\n2. Real-time event notifications (mentioned by 15/20) — Phoenix Kafka-powered notifications are highly valued.\n3. Machine learning predictions (mentioned by 12/20) — Orion's PyTorch-powered predictions are a premium feature that justifies pricing premium.\n4. Dashboard simplicity (mentioned by 14/20) — Horizon's TypeScript React dashboard is cleaner than competitors.\n\nTop complaints:\n1. Atlas transaction search is too slow (noted by 10/20) — Alice is addressing with Elasticsearch integration.\n2. Orion prediction explanations are unclear (noted by 8/20) — Skyler is redesigning the prediction panel.\n3. Missing bulk import for Atlas (noted by 7/20) — Alice and Bob are designing the Kafka-backed bulk import.\n\nConclusion: Postgres (ACID), Kafka (real-time), PyTorch (ML), React/TypeScript (UX) are the right bets. The technical decisions made in Q1 are aligned with enterprise customer needs.",
+    "last_edited": "2024-03-15T10:00:00Z",
+    "author": "blake"
+  }
+]

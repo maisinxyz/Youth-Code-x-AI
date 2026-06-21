@@ -1,0 +1,72 @@
+[
+  {
+    "title": "ADR-001: Postgres over MongoDB for Atlas",
+    "body": "Status: ACCEPTED | Date: 2024-01-15 | Author: Alice | Reviewers: Bob, Carol, Dave, Frank\n\nContext:\nThe Atlas transaction ledger requires a reliable, consistent datastore. Two candidates were evaluated: PostgreSQL and MongoDB. The evaluation was led by Alice over two weeks in January 2024.\n\nEvaluation criteria:\n- ACID compliance (critical for financial transactions)\n- Write throughput at 10k+ TPS\n- Operational complexity\n- Team familiarity\n\nDecision: PostgreSQL was chosen. MongoDB was rejected.\n\nRationale:\nPostgres provides full ACID compliance including atomicity, consistency, isolation, and durability. MongoDB's default eventual consistency model is a dealbreaker for the Atlas transaction ledger — partial writes on financial records cannot be tolerated. The team has strong Postgres expertise. Postgres scales to our projected 100k TPS via connection pooling (PgBouncer) and read replicas.\n\nConsequences:\nAll Atlas transaction writes go to the Postgres primary. A read replica serves the Horizon dashboard and Prism analytics. Redis caches hot read paths. Elasticsearch provides full-text search over the transaction history.\n\nThis decision is final. MongoDB shall not be re-evaluated for the Atlas core ledger in this product phase.",
+    "created_at": "2024-01-15T10:00:00Z",
+    "author": "alice",
+    "space": "Engineering"
+  },
+  {
+    "title": "ADR-002: Kafka over RabbitMQ for Phoenix",
+    "body": "Status: ACCEPTED | Date: 2024-02-01 | Author: Bob | Reviewers: Alice, Frank\n\nContext:\nPhoenix, Meridian's event streaming pipeline, was originally built on RabbitMQ. During Q4 2023 load testing, RabbitMQ reached its throughput ceiling at 80,000 messages per second. The Atlas transaction ledger, Orion ML service, and Horizon dashboard all depend on reliable event streaming.\n\nCandidates evaluated: Apache Kafka, RabbitMQ (status quo), AWS SQS.\n\nDecision: Migrate Phoenix from RabbitMQ to Apache Kafka.\n\nRationale:\nKafka provides horizontal scalability — our cluster now handles 600,000 messages per second with 3 brokers. Kafka's log-based storage allows consumers to replay events, which is essential for Orion's ML training pipeline. Kafka's consumer group model gives us independent scaling of Atlas, Orion, and Horizon consumers. AWS SQS was rejected for vendor lock-in reasons; Kafka runs on our GCP Kubernetes infrastructure managed by Frank.\n\nKafka cluster configuration: 3 brokers, KRaft mode (no Zookeeper), 3x replication. Topics: atlas-events (24 partitions), orion-predictions (12 partitions), horizon-notifications (6 partitions).\n\nThis decision was approved by Alice and Frank. The migration was completed in February 2024.",
+    "created_at": "2024-02-01T10:00:00Z",
+    "author": "bob",
+    "space": "Engineering"
+  },
+  {
+    "title": "ADR-003: TypeScript Standardization",
+    "body": "Status: ACCEPTED | Date: 2024-01-20 | Author: Carol | Reviewers: Alice, Eve\n\nContext:\nThe early Horizon codebase mixed JavaScript and TypeScript, causing type errors in production and slowing down development velocity. Carol proposed standardizing on TypeScript strict mode across all Meridian frontend code.\n\nDecision: All Meridian frontend code must use TypeScript. No plain JavaScript is allowed in the Horizon, developer portal, or Zenith codebases.\n\nRationale:\nTypeScript catches type errors at compile time, not runtime. The Horizon dashboard interfaces with the Atlas Postgres data model and the Phoenix Kafka event schema — both have strict types. TypeScript ensures these contracts are enforced at the API boundary. Maintenance cost of mixed JS/TS is too high. Carol standardized ESLint with TypeScript strict mode and the CI pipeline now blocks merges on type errors.\n\nImplementation:\n- ESLint with TypeScript strict mode configured (no `any` types)\n- GitHub CI pipeline blocks on TypeScript errors\n- Storybook documentation for all 47 typed React components (Tyler implemented)\n- Feature flags backed by Redis, typed with TypeScript interfaces\n\nThis decision has been ratified by leadership (Eve) and applies to all current and future frontend engineering at Meridian.",
+    "created_at": "2024-01-20T10:00:00Z",
+    "author": "carol",
+    "space": "Engineering"
+  },
+  {
+    "title": "ADR-004: PyTorch over TensorFlow for Orion",
+    "body": "Status: ACCEPTED | Date: 2024-01-22 | Author: Dave | Reviewers: Alice, Eve\n\nContext:\nOrion, the Meridian ML prediction service, needed a deep learning framework. Dave evaluated PyTorch and TensorFlow.\n\nDecision: Orion uses PyTorch for model training and inference.\n\nRationale:\nPyTorch's dynamic computation graph (eager execution) is better suited to Meridian's research-to-production workflow. The team's existing expertise is in PyTorch — 3 of 4 ML engineers have prior experience. TensorFlow's static graph model and the complexity of TensorFlow Serving added operational overhead that Frank did not want on the Titan Kubernetes infrastructure.\n\nPyTorch model training runs on GCP T4 GPU instances, orchestrated by Airflow. Model artifacts stored in Google Cloud Storage. Inference via FastAPI endpoint (under 60ms p99). Sam is now running experiments with Pinecone for vector storage and LangChain for the Q3 natural language query feature.\n\nThe Orion PyTorch model achieved 96% accuracy on the Atlas production dataset. This decision is final for the current ML architecture phase.",
+    "created_at": "2024-01-22T10:00:00Z",
+    "author": "dave",
+    "space": "Engineering"
+  },
+  {
+    "title": "ADR-005: GCP and Kubernetes for Titan",
+    "body": "Status: ACCEPTED | Date: 2024-01-10 | Author: Frank | Reviewers: Alice, Eve\n\nContext:\nMeridian's infrastructure was originally on AWS EC2 instances with manual provisioning. Frank proposed migrating to Kubernetes on GCP using Terraform for infrastructure-as-code.\n\nDecision: All Meridian services run on Kubernetes (GKE Autopilot) on Google Cloud Platform. Terraform manages all GCP infrastructure. Docker is the containerization standard.\n\nRationale:\nGCP enterprise agreement saves 30% on compute costs. GKE Autopilot removes node pool management overhead. Terraform ensures reproducible infrastructure — all environments (dev, staging, prod) are code. Docker standardizes the build process across all Meridian services (Atlas, Phoenix, Orion, Horizon). AWS was rejected to avoid vendor lock-in after the GCP enterprise discount made GCP the obvious choice.\n\nHorizontal Pod Autoscalers configured for all services. Prometheus + Grafana observability. PagerDuty on-call integration. Hiro joined the Titan team to support this infrastructure at scale.\n\nThis decision is ratified by leadership and the GCP enterprise agreement is signed.",
+    "created_at": "2024-01-10T10:00:00Z",
+    "author": "frank",
+    "space": "Engineering"
+  },
+  {
+    "title": "Q1 2024 Engineering Decisions Summary",
+    "body": "Prepared by Alice for the Q1 board update. This document summarizes all major engineering decisions made in Q1 2024.\n\nDecision 1: Postgres for Atlas (ACID compliance)\nWho decided: Alice. Rationale: ACID compliance for transaction ledger. MongoDB rejected for eventual consistency. Status: In production at 12k TPS.\n\nDecision 2: Kafka for Phoenix (scalability)\nWho decided: Bob. Rationale: RabbitMQ hit throughput ceiling at 80k msg/s. Kafka handles 600k msg/s. Status: In production, 3-broker Kafka cluster on Kubernetes.\n\nDecision 3: TypeScript for Horizon (maintainability)\nWho decided: Carol. Rationale: Mixed JavaScript/TypeScript caused production type errors. TypeScript strict mode enforced. Status: All 47 Horizon React components typed.\n\nDecision 4: PyTorch for Orion (ML accuracy)\nWho decided: Dave. Rationale: Dynamic computation graph, team expertise, GCP compatibility. Status: 96% prediction accuracy, 60ms inference latency.\n\nDecision 5: Kubernetes on GCP for Titan (operations)\nWho decided: Frank. Rationale: GCP enterprise discount, GKE Autopilot, Terraform IaC. Status: All services on GKE Autopilot, Terraform-managed.\n\nThese five decisions form the technical foundation of the Meridian platform for 2024 and beyond. They were made collectively by the engineering leadership team and ratified by Eve and the board.",
+    "created_at": "2024-04-01T10:00:00Z",
+    "author": "alice",
+    "space": "Engineering"
+  },
+  {
+    "title": "Atlas Postgres Schema Documentation",
+    "body": "This page documents the Atlas transaction ledger Postgres schema. Author: Alice. Last updated: March 2024.\n\nCore tables:\n\ntransactions: id (UUID PK), amount (DECIMAL), currency (VARCHAR), source_account (UUID FK), destination_account (UUID FK), status (ENUM: pending/processing/complete/failed), created_at (TIMESTAMPTZ), updated_at (TIMESTAMPTZ), metadata (JSONB)\n\naccounts: id (UUID PK), owner_id (UUID FK), account_type (ENUM: checking/savings/business), balance (DECIMAL), created_at (TIMESTAMPTZ)\n\nevents: id (UUID PK), transaction_id (UUID FK), event_type (VARCHAR), payload (JSONB), kafka_offset (BIGINT), created_at (TIMESTAMPTZ)\n\nIndexing strategy: B-tree index on transactions(status, created_at) for status queries. GIN index on transactions(metadata) for JSONB queries. The Elasticsearch layer mirrors the transactions table for full-text search.\n\nConnection pooling: PgBouncer in transaction mode, 100 max connections. This was tuned by Alice after load testing. The read replica (for Horizon, Prism, Apex) connects directly without PgBouncer.\n\nBackup: Postgres WAL archiving to GCS. Point-in-time recovery enabled. Daily full backup. Frank owns the backup and recovery runbook in the Titan Confluence space.",
+    "created_at": "2024-03-15T10:00:00Z",
+    "author": "alice",
+    "space": "Engineering"
+  },
+  {
+    "title": "Security and Compliance Policy",
+    "body": "Meridian Security Policy — owned by Frank and Rachel. Approved by Eve.\n\nAuthentication: All Meridian APIs use OAuth 2.0 for authentication and JWT for session tokens. The Nexus API gateway validates JWT on all incoming requests before routing to Atlas, Orion, or Horizon. JWT secrets are rotated quarterly — Frank owns the rotation schedule (next rotation: June 1, 2024).\n\nData residency: Atlas Postgres data for EU customers must remain in GCP europe-west1. Frank is setting up a dedicated EU Kubernetes cluster. Rachel is coordinating the GDPR compliance review with external auditors.\n\nGitHub secrets: All secrets (GCP credentials, Postgres passwords, Kafka authentication, JWT secrets) are stored in GitHub Secrets. Frank manages the secrets rotation. No secrets are committed to code.\n\nData classification: Production Atlas transaction data must never appear in Slack, Notion, Jira, or any communication channel. Postgres is the only authorized store for production transaction data. Rachel enforces this policy via the incident management process.\n\nSecurity audit: Scheduled for Q2 2024. Focus: Atlas Postgres encryption at rest, JWT token handling across all services, OAuth flow in Horizon, network policies on the Titan Kubernetes cluster.",
+    "created_at": "2024-02-01T10:00:00Z",
+    "author": "frank",
+    "space": "Engineering"
+  },
+  {
+    "title": "Prism Architecture Decision",
+    "body": "Status: ACCEPTED | Date: 2024-03-01 | Author: Morgan | Reviewers: Alice, Bob\n\nContext:\nMeridian needs a real-time analytics layer on top of Atlas transactions and Phoenix events. Morgan proposed Prism as a new service.\n\nDecision: Prism uses Apache Kafka Streams for real-time processing, with results materialized into Postgres for historical queries.\n\nEvaluation:\n- Option A: Batch Postgres queries (Alice's initial proposal) — simple, but 30-minute lag on aggregate metrics\n- Option B: Kafka Streams with Postgres persistence (Bob's proposal) — real-time, more complex\n- Decision: Option B was chosen. Alice and Bob agreed on the hybrid: Kafka Streams for real-time, Postgres for persistence.\n\nKafka Streams topology: consumes atlas-events and orion-predictions topics, computes rolling aggregates (1-minute, 1-hour, 1-day), writes to Postgres aggregate tables, which the Horizon React TypeScript dashboard renders via GraphQL.\n\nMorgan leads Prism product. Bob leads Kafka Streams implementation. Alice owns the Postgres schema. Carol owns the Horizon integration (React TypeScript charts using recharts). Q2 GA target confirmed.",
+    "created_at": "2024-03-01T10:00:00Z",
+    "author": "morgan",
+    "space": "Engineering"
+  },
+  {
+    "title": "Meridian V2 Roadmap — Engineering Plan",
+    "body": "Approved by Eve and the leadership team. Engineering owners: Alice, Bob, Carol, Dave, Frank.\n\nQ2 2024 (April - June):\n- Atlas: Scale to 50k TPS (Postgres optimization, Elasticsearch search, bulk import via Kafka)\n- Phoenix: Prism Kafka Streams layer GA\n- Horizon: V2 redesign (Skyler Figma, Carol TypeScript implementation), Orion predictions integration\n- Orion: General availability (PyTorch inference on GCP, Sam's ML improvements)\n- Titan: GCP europe-west1 expansion for EU data residency (Frank)\n\nQ3 2024 (July - September):\n- Atlas: 100k TPS target, Vega analytics service (separate Postgres instance for OLAP)\n- Nexus: API gateway launch (Nginx, JWT, OAuth, Frank leading)\n- Orion: Enterprise custom model fine-tuning (Dave + Sam)\n- Zenith: Customer success portal MVP (Morgan product, Carol frontend)\n\nQ4 2024 (October - December):\n- International expansion: EU launch with GCP europe-west1, GDPR compliance (Rachel)\n- Orion: LangChain integration for natural language queries (Dave, TBD decision on OpenAI vs self-hosted)\n- Horizon: i18next internationalization (Carol, RTL support for Arabic)\n\nOpen questions requiring Q3 decisions:\n- LangChain: OpenAI API vs self-hosted models for Orion NLQ feature\n- Vega: Postgres OLAP vs BigQuery for long-running analytical queries\n- v2 pricing: usage-based vs seat-based vs hybrid model (Eve and Nathan leading)\n- Native mobile: React Native for Horizon or continue with PWA strategy (TBD)",
+    "created_at": "2024-04-01T10:00:00Z",
+    "author": "eve",
+    "space": "Engineering"
+  }
+]
