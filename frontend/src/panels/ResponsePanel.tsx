@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useQueryStore } from "../state/query";
+import { useDrawerStore } from "../state/drawer";
+import type { Source } from "../lib/api";
 
 const CHARS_PER_SEC = 30;
 const INTERVAL_MS = Math.round(1000 / CHARS_PER_SEC); // ~33ms
@@ -27,6 +29,7 @@ function ThinkingDots() {
 
 export function ResponsePanel() {
   const { lastResponse, isPending } = useQueryStore();
+  const { openDrawer } = useDrawerStore();
   const [displayedText, setDisplayedText] = useState("");
   const [isDone, setIsDone] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -99,16 +102,16 @@ export function ResponsePanel() {
                       transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] }}
                       className="mt-3 flex flex-wrap gap-1.5"
                     >
-                      {lastResponse.sources.map((src) => (
+                      {lastResponse.sources.map((src: Source) => (
                         <button
                           key={src.source_id}
+                          onClick={() => openDrawer(src)}
                           className="pointer-events-auto rounded-md px-2 py-1 font-mono text-[10px] text-white/45
                                      transition-colors duration-150 hover:text-white/80 active:scale-[0.97]"
                           style={{
                             background: "rgba(255,255,255,0.05)",
                             border: "1px solid rgba(255,255,255,0.09)",
                           }}
-                          title={src.excerpt}
                         >
                           {src.title}
                         </button>
