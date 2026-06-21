@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Person icon (large, purple) -->
+  <circle cx="30" cy="13" r="6" fill="#7B83EB"/>
+  <rect x="19" y="21" width="22" height="14" rx="4" fill="#7B83EB"/>
+  <!-- Overlapping T panel (white/light) -->
+  <rect x="4" y="18" width="24" height="20" rx="4" fill="#4F52B2"/>
+  <!-- T letter -->
+  <rect x="8" y="22" width="16" height="3" rx="1.5" fill="white"/>
+  <rect x="14.5" y="25" width="3" height="10" rx="1.5" fill="white"/>
+</svg>

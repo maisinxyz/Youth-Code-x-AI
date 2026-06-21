@@ -1,20 +1,18 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { CONNECTOR_ICONS } from "../../lib/connector-icons";
+import { CONNECTOR_LOGOS } from "../../lib/connector-icons";
 
-function ConnectorLogo({ id, size = 22 }: { id: keyof typeof CONNECTOR_ICONS; size?: number }) {
-  const icon = CONNECTOR_ICONS[id];
+function ConnectorLogo({ id, size = 24 }: { id: string; size?: number }) {
+  const logo = CONNECTOR_LOGOS[id];
   return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
+    <img
+      src={logo.src}
+      alt={logo.alt}
       width={size}
       height={size}
-      fill="currentColor"
-      aria-label={icon.title}
-    >
-      <path d={icon.path} />
-    </svg>
+      style={{ objectFit: "contain" }}
+      draggable={false}
+    />
   );
 }
 
