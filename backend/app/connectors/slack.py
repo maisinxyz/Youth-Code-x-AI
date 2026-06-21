@@ -11,7 +11,7 @@ from pathlib import Path
 from app.connectors.base import Connector
 from app.models.schemas import IngestRequest
 
-_FIXTURE_DIR = Path(__file__).parent.parent.parent / "data" / "meridian" / "slack"
+_FIXTURE_DIR = Path(__file__).parent.parent.parent.parent / "data" / "meridian" / "slack"
 
 
 class SlackConnector(Connector):

@@ -11,6 +11,7 @@ from app.connectors.slack import SlackConnector
 from app.connectors.teams import TeamsConnector
 from app.models.schemas import IngestRequest, IngestResponse
 from app.services.ingestion import process_ingest
+from app.services import store
 
 router = APIRouter()
 
@@ -27,7 +28,9 @@ _CONNECTORS: dict[str, type[Connector]] = {
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest(req: IngestRequest) -> IngestResponse:
     # BACKBOARD_PLACEHOLDER — upload_document_to_assistant() wired in Phase 5 §21
-    return await process_ingest(req)
+    resp = await process_ingest(req)
+    store.commit()
+    return resp
 
 
 @router.post("/ingest/connector/{connector_name}", response_model=IngestResponse)
@@ -46,6 +49,7 @@ async def ingest_connector(connector_name: str) -> IngestResponse:
         total_nodes += resp.nodes_created
         total_edges += resp.edges_created
         total_chunks += resp.chunk_count
+    store.commit()
     return IngestResponse(
         ingested_id=ingested_id,
         nodes_created=total_nodes,

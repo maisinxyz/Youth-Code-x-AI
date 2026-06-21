@@ -11,7 +11,7 @@ from typing import Any
 from app.models.schemas import GraphEdge, GraphNode
 
 # Resolved at module load; tests can monkeypatch this attribute.
-_STORE_PATH: Path = Path(__file__).parent.parent.parent / "data" / "store.json"
+_STORE_PATH: Path = Path(__file__).parent.parent.parent / "data" / ".store.json"
 
 # In-memory state
 _nodes: dict[str, GraphNode] = {}          # id → GraphNode
@@ -49,11 +49,9 @@ def upsert_node(node: GraphNode) -> tuple[GraphNode, bool]:
         existing = _nodes[existing_id]
         existing.weight = min(1.0, existing.weight + 0.05)
         existing.last_active = datetime.now(timezone.utc)
-        _save()
         return existing, False
     _nodes[node.id] = node
     _nodes_by_label[key] = node.id
-    _save()
     return node, True
 
 
@@ -62,7 +60,6 @@ def upsert_edge(edge: GraphEdge) -> tuple[GraphEdge, bool]:
     key = (min(edge.source, edge.target), max(edge.source, edge.target))
     if key in _edges:
         _edges[key].strength += 1.0
-        _save()
         return _edges[key], False
     _edges[key] = GraphEdge(
         source=key[0],
@@ -70,12 +67,13 @@ def upsert_edge(edge: GraphEdge) -> tuple[GraphEdge, bool]:
         strength=edge.strength,
         relationship_type=edge.relationship_type,
     )
-    _save()
     return _edges[key], True
 
 
 def add_chunk(chunk: dict[str, Any]) -> None:
     _chunks.append(chunk)
+
+def commit() -> None:
     _save()
 
 

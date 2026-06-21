@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     log_level: str = "info"
 
     # CORS
-    allowed_origins: str = "http://localhost:5173"
+    allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Backboard (Phase 5 §21) — BACKBOARD_PLACEHOLDER
     backboard_api_key: str = ""

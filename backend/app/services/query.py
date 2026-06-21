@@ -115,8 +115,12 @@ async def handle_query(req: QueryRequest) -> QueryResponse:
     top_chunks = [c for c, score in scored[:_TOP_K] if score > 0]
 
     if not top_chunks:
-        # No keyword overlap — return graceful fallback
-        top_chunks = [chunks[0]] if chunks else []
+        return QueryResponse(
+            answer="No relevant content found for this query.",
+            sources=[],
+            activated_nodes=[],
+            session_id=session_id,
+        )
 
     # ── 3. Build sources + seed node IDs from top chunks ─────────────────────
     sources: list[Source] = []
