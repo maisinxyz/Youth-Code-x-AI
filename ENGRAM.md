@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 1 — Backend (not started)
+**Current phase:** Phase 1 — Backend (§1 complete, §2 next)
 
 ---
 
@@ -444,7 +444,7 @@ VITE_SUPABASE_ANON_KEY=               # Phase 5 §22
 Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 
 ### Phase 1 — Backend
-- ⬜ §1 Project setup & monorepo skeleton
+- ✅ §1 Project setup & monorepo skeleton
 - ⬜ §2 Core API routes (contracts first)
 - ⬜ §3 Ingestion pipeline
 - ⬜ §4 Query handler
