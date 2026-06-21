@@ -2,9 +2,12 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { WordmarkPanel } from "../panels/WordmarkPanel";
+
 export default function Waitlist() {
   return (
     <div className="relative min-h-screen bg-black flex flex-col items-center justify-center px-4 overflow-hidden">
+      <WordmarkPanel />
 
       {/* Background glow */}
       <div

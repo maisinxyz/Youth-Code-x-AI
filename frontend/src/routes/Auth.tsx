@@ -112,6 +112,8 @@ function ConnectorCard({
   );
 }
 
+import { WordmarkPanel } from "../panels/WordmarkPanel";
+
 // ── Main Auth Page ───────────────────────────────────────────────────
 export default function Auth() {
   const navigate = useNavigate();
@@ -127,6 +129,7 @@ export default function Auth() {
 
   return (
     <div className="relative min-h-screen bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
+      <WordmarkPanel />
 
       {/* Background glow */}
       <div
