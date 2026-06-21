@@ -42,6 +42,7 @@ frontend/.vite/
 
 # Data (local store — may contain ingested content)
 backend/data/store.json
+backend/data/.store.json
 
 # OS
 .DS_Store
