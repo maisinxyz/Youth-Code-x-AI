@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Mic } from "lucide-react";
+import { ArrowRight, Mic, MicOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSpeechRecognition } from "../voice/useSpeechRecognition";
 import { useQueryStore } from "../state/query";
@@ -30,7 +30,7 @@ function WaveformBars() {
 }
 
 interface QueryBarProps {
-  /** Called once hold-to-talk produces a final transcript — auto-submits. */
+  /** Called once mic produces a final transcript — auto-submits. */
   onSubmitTranscript?: (text: string) => void;
 }
 
@@ -49,8 +49,7 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
     return () => clearTimeout(id);
   }, [isPending]);
 
-  // When final transcript arrives after releasing the mic, populate the input
-  // and auto-submit
+  // Keep input text in sync with live transcript while listening
   useEffect(() => {
     if (!transcript) return;
     setText(transcript);
@@ -79,16 +78,15 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
     if (e.key === "Enter") submit();
   };
 
-  const handleMicDown = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault(); // Prevent focus loss on touch
-    setText("");
-    start();
-  };
-
-  const handleMicUp = () => {
-    stop();
-    // Focus input after releasing mic so user can edit the transcript
-    setTimeout(() => inputRef.current?.focus(), 50);
+  /** Toggle mic on/off */
+  const handleMicToggle = () => {
+    if (isListening) {
+      stop();
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      setText("");
+      start();
+    }
   };
 
   return (
@@ -118,16 +116,14 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
           animation: "capsulePulse 4s ease-in-out infinite",
         }}
       >
-        {/* ── Mic button ───────────────────────────────────── */}
+        {/* ── Mic toggle button ───────────────────────────── */}
         <button
-          onMouseDown={isSupported ? handleMicDown : undefined}
-          onMouseUp={isSupported ? handleMicUp : undefined}
-          onTouchStart={isSupported ? handleMicDown : undefined}
-          onTouchEnd={isSupported ? handleMicUp : undefined}
+          onClick={isSupported ? handleMicToggle : undefined}
           disabled={!isSupported || isPending}
-          className="relative flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full
-                     select-none disabled:opacity-20"
-          title={isSupported ? "Hold to speak" : "Voice input not supported in this browser"}
+          className={`relative flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full
+                     select-none disabled:opacity-20 transition-colors duration-200
+                     ${isListening ? "bg-red-500/20" : ""}`}
+          title={isSupported ? (isListening ? "Click to stop" : "Click to speak") : "Voice input not supported in this browser"}
         >
           {/* Pulsing ring while listening */}
           <AnimatePresence>
@@ -147,11 +143,18 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
             )}
           </AnimatePresence>
 
-          <Mic
-            size={14}
-            className="relative z-10 transition-colors duration-150"
-            style={{ color: isListening ? "rgb(124, 58, 237)" : "#8266ad" }}
-          />
+          {isListening ? (
+            <MicOff
+              size={14}
+              className="relative z-10 text-red-400 transition-colors duration-150"
+            />
+          ) : (
+            <Mic
+              size={14}
+              className="relative z-10 transition-colors duration-150"
+              style={{ color: "#8266ad" }}
+            />
+          )}
         </button>
 
         {/* ── Input / waveform area ─────────────────────── */}

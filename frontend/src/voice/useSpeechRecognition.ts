@@ -39,6 +39,8 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const recogRef = useRef<SpeechRecognitionInstance | null>(null);
+  /** Flag to track if user intentionally stopped listening */
+  const intentionalStopRef = useRef(false);
 
   const start = useCallback(() => {
     if (!SR) {
@@ -46,9 +48,10 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
       return;
     }
     recogRef.current?.abort();
+    intentionalStopRef.current = false;
 
     const recog = new SR();
-    recog.continuous = false;
+    recog.continuous = true;
     recog.interimResults = true;
     recog.lang = "en-US";
 
@@ -59,26 +62,30 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
     };
 
     recog.onresult = (e: SpeechRecognitionEvent) => {
-      let final = "";
-      let interim = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const result = e.results[i];
-        if (result.isFinal) {
-          final += result[0].transcript;
-        } else {
-          interim += result[0].transcript;
-        }
+      let full = "";
+      for (let i = 0; i < e.results.length; i++) {
+        full += e.results[i][0].transcript;
       }
-      setTranscript(final || interim);
+      setTranscript(full);
     };
 
     recog.onerror = (e: SpeechRecognitionErrorEvent) => {
-      if (e.error !== "aborted") setError(e.error);
+      if (e.error !== "aborted" && e.error !== "no-speech") setError(e.error);
       setIsListening(false);
     };
 
     recog.onend = () => {
-      setIsListening(false);
+      // If the user didn't intentionally stop, restart recognition
+      // (browsers auto-stop after silence; we want to keep listening)
+      if (!intentionalStopRef.current && recogRef.current) {
+        try {
+          recog.start();
+        } catch {
+          setIsListening(false);
+        }
+      } else {
+        setIsListening(false);
+      }
     };
 
     recogRef.current = recog;
@@ -86,6 +93,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   }, [SR]);
 
   const stop = useCallback(() => {
+    intentionalStopRef.current = true;
     recogRef.current?.stop();
     recogRef.current = null;
   }, []);
