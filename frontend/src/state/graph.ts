@@ -1,5 +1,4 @@
 import { create } from "zustand";
-
 import { getGraph, type GraphEdge, type GraphNode } from "../lib/api";
 
 type GraphState = {
@@ -7,7 +6,10 @@ type GraphState = {
   edges: GraphEdge[];
   isLoading: boolean;
   error: string | null;
+  activatedNodeIds: Set<string>;
   fetchGraph: () => Promise<void>;
+  setActivatedNodes: (ids: string[]) => void;
+  clearActivated: () => void;
 };
 
 export const useGraphStore = create<GraphState>((set) => ({
@@ -15,6 +17,8 @@ export const useGraphStore = create<GraphState>((set) => ({
   edges: [],
   isLoading: false,
   error: null,
+  activatedNodeIds: new Set(),
+
   fetchGraph: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -24,4 +28,7 @@ export const useGraphStore = create<GraphState>((set) => ({
       set({ isLoading: false, error: (err as Error).message });
     }
   },
+
+  setActivatedNodes: (ids) => set({ activatedNodeIds: new Set(ids) }),
+  clearActivated: () => set({ activatedNodeIds: new Set() }),
 }));

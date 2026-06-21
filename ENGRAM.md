@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 3 — Frontend §9–§12 COMPLETE ✅ | §13 Three.js brain — base render next
+**Current phase:** Phase 3 — Frontend §9–§13 COMPLETE ✅ | §14 Query reaction animations next
 
 ---
 
@@ -461,7 +461,7 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 - ✅ §11 Connector selection screen — FallingPattern bg, 6 cards with full-color official brand logos in /public/logos/ (img tags), framer-motion stagger + pulse on select, "Select all" convenience, "Build your brain →" CTA → /loading
 - ✅ §12 Brain loading animation — 220 R3F particles rain from top → converge to fibonacci-sphere node positions → crystallize with Bloom burst → edges draw sequentially via native THREE.Line → auto-navigate to /brain at t=6.5s, skip-on-click
 - ⬜ §12 Brain loading animation
-- ⬜ §13 Three.js semantic graph — base render
+- ✅ §13 Three.js semantic graph — src/scene/: BrainScene, NodeMesh (octahedron + idle bob/breathe/rotate), EdgeMesh (drei Line, opacity by strength), CameraRig (OrbitControls, autoRotate 0.35), Postprocessing (Bloom 1.1 + ChromaticAberration), layout.ts (fibonacci sphere + 50-iter spring relaxation), makeDemoGraph() fallback (40 nodes, 30 edges). Brain.tsx updated with full-screen canvas + wordmark + placeholder query bar.
 - ⬜ §14 Three.js — query reaction animations
 - ⬜ §15 Floating UI panels
 - ⬜ §16 Voice input + output
