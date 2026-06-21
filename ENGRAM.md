@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 1 — Backend (§1 complete, §2 next)
+**Current phase:** Phase 1 — Backend (§4 complete, §5 next)
 
 ---
 
@@ -421,8 +421,8 @@ VITE_SUPABASE_ANON_KEY=               # Phase 5 §22
 | File | Line / Block | Purpose | Real impl in §21 |
 |---|---|---|---|
 | _(none yet — add as Phase 1 ships)_ | | | |
-| `backend/app/services/backboard_stub.py` | entire module | Stubbed Backboard SDK functions | replaced by `backboard.py` |
-| `backend/app/services/ingestion.py` | `process_ingest()` upload step | upload chunks with `send_to_llm=False` | call `backboard.upload_document_to_assistant` |
+| `backend/app/services/backboard_stub.py` | entire module — `create_assistant`, `upload_document_to_assistant`, `create_thread`, `query_assistant` | Stubbed Backboard SDK functions | replaced by `backboard.py` |
+| `backend/app/services/ingestion.py` | `process_ingest()` — upload step at end of each chunk loop | upload chunks with `send_to_llm=False` | call `backboard.upload_document_to_assistant` |
 | `backend/app/services/query.py` | `handle_query()` retrieval step | RAG retrieval + answer | call `backboard.query_assistant(memory="Auto")` |
 
 ### `# SUPABASE_PLACEHOLDER`
@@ -445,9 +445,9 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 
 ### Phase 1 — Backend
 - ✅ §1 Project setup & monorepo skeleton
-- ⬜ §2 Core API routes (contracts first)
-- ⬜ §3 Ingestion pipeline
-- ⬜ §4 Query handler
+- ✅ §2 Core API routes (contracts first)
+- ✅ §3 Ingestion pipeline
+- ✅ §4 Query handler
 - ⬜ §5 Connector modules
 - ⬜ §6 Graph state manager
 - ⬜ §7 Backend end-to-end verification
