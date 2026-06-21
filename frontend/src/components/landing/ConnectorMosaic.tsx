@@ -13,16 +13,15 @@ import { useRef } from "react";
 type ConnectorCard = {
   name: string;
   icon: LucideIcon;
-  status: "ready";
 };
 
 const CONNECTORS: ConnectorCard[] = [
-  { name: "Slack", icon: Hash, status: "ready" },
-  { name: "Notion", icon: FileText, status: "ready" },
-  { name: "Drive", icon: FolderOpen, status: "ready" },
-  { name: "Confluence", icon: Box, status: "ready" },
-  { name: "Jira", icon: GitBranch, status: "ready" },
-  { name: "Teams", icon: Users, status: "ready" },
+  { name: "Slack", icon: Hash },
+  { name: "Notion", icon: FileText },
+  { name: "Drive", icon: FolderOpen },
+  { name: "Confluence", icon: Box },
+  { name: "Jira", icon: GitBranch },
+  { name: "Teams", icon: Users },
 ];
 
 export function ConnectorMosaic() {
@@ -49,21 +48,16 @@ export function ConnectorMosaic() {
                 key={c.name}
                 initial={{ y: 24, opacity: 0 }}
                 animate={inView ? { y: 0, opacity: 1 } : {}}
-                transition={{
-                  duration: 0.55,
-                  delay: i * 0.08,
-                  ease: [0, 0, 0.2, 1],
-                }}
-                className="group relative flex flex-col gap-6 rounded-md border border-border-subtle bg-bg-surface p-6 transition-all duration-standard hover:border-border-accent hover:shadow-accentGlow md:p-8"
+                transition={{ duration: 0.55, delay: i * 0.08, ease: [0, 0, 0.2, 1] }}
+                className="group relative flex flex-col gap-6 rounded-md border border-border-subtle bg-bg-surface p-6 transition-all duration-standard hover:border-white/20 hover:bg-bg-elevated md:p-8"
               >
                 <div className="flex items-center justify-between">
-                  <Icon className="h-6 w-6 text-text-secondary transition-colors duration-standard group-hover:text-accent-bright" />
+                  <Icon className="h-6 w-6 text-text-secondary transition-colors duration-standard group-hover:text-white" />
                   <span className="flex items-center gap-2 text-xs text-text-muted">
-                    <span className="h-1.5 w-1.5 rounded-pill bg-status-connected" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/50" />
                     ready
                   </span>
                 </div>
-
                 <span className="font-display text-md font-bold tracking-display text-text-primary">
                   {c.name}
                 </span>

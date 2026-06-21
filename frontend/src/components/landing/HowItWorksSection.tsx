@@ -35,7 +35,7 @@ function StepPanel({ step, index }: { step: (typeof STEPS)[number]; index: numbe
       }}
       className="group relative flex flex-col gap-6 rounded-md border border-border-subtle bg-bg-surface p-8 transition-colors duration-standard hover:border-border-default md:p-12"
     >
-      <span className="font-display text-2xl font-extrabold tracking-display text-accent-default">
+      <span className="font-display text-2xl font-extrabold tracking-display text-white/40">
         {step.n}
       </span>
       <h3 className="font-display text-xl font-bold tracking-display text-text-primary">
@@ -47,7 +47,7 @@ function StepPanel({ step, index }: { step: (typeof STEPS)[number]; index: numbe
 
       {/* subtle accent glow on hover */}
       <span className="pointer-events-none absolute inset-0 rounded-md opacity-0 transition-opacity duration-standard group-hover:opacity-100" style={{
-        boxShadow: "inset 0 0 60px oklch(56% 0.11 162 / 6%)",
+        boxShadow: "inset 0 0 60px rgba(255,255,255,0.03)",
       }} />
     </motion.div>
   );
