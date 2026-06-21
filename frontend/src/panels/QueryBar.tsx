@@ -93,18 +93,29 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, x: "-50%" }}
+      animate={{ opacity: 1, y: 0, x: "-50%" }}
       transition={{ duration: 0.7, delay: 0.6, ease: [0, 0, 0.2, 1] }}
-      className="fixed bottom-8 left-1/2 z-20 -translate-x-1/2"
+      className="fixed bottom-8 left-1/2 z-20"
     >
-      <div
-        className="flex items-center gap-3 rounded-full px-4 py-3"
+      {/* Radial bloom */}
+      <div 
+        className="pointer-events-none absolute bottom-[-32px] left-1/2 -translate-x-1/2 h-[300px] w-[800px]"
         style={{
-          background: "rgba(0,0,0,0.65)",
-          border: "1px solid rgba(255,255,255,0.12)",
+          background: "radial-gradient(ellipse at bottom, rgba(124,58,237,0.15) 0%, transparent 60%)",
+          zIndex: -1,
+        }}
+      />
+
+      <div
+        className="flex items-center gap-3 rounded-full px-5 py-3.5 transition-all duration-300"
+        style={{
+          background: "rgba(0,0,0,0.7)",
+          border: "1px solid rgba(124, 58, 237, 0.4)",
           backdropFilter: "blur(20px)",
-          minWidth: "380px",
+          minWidth: "560px",
+          boxShadow: "inset 0 0 16px rgba(124, 58, 237, 0.0), 0 0 16px rgba(124, 58, 237, 0.15)",
+          animation: "capsulePulse 4s ease-in-out infinite",
         }}
       >
         {/* ── Mic button ───────────────────────────────────── */}
@@ -139,7 +150,7 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
           <Mic
             size={14}
             className="relative z-10 transition-colors duration-150"
-            style={{ color: isListening ? "rgb(248,113,113)" : "rgba(255,255,255,0.5)" }}
+            style={{ color: isListening ? "rgb(124, 58, 237)" : "#8266ad" }}
           />
         </button>
 
@@ -192,12 +203,17 @@ export function QueryBar({ onSubmitTranscript }: QueryBarProps) {
         )}
       </div>
 
-      {/* Keyframe for mic ping — injected once as a style tag */}
+      {/* Keyframes */}
       <style>{`
         @keyframes micPing {
           0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
           70%  { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
           100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        }
+        @keyframes capsulePulse {
+          0%   { border-color: rgba(124, 58, 237, 0.3); box-shadow: inset 0 0 0 rgba(124,58,237,0), 0 0 12px rgba(124,58,237,0.1); }
+          50%  { border-color: rgba(124, 58, 237, 0.6); box-shadow: inset 0 0 12px rgba(124,58,237,0.2), 0 0 24px rgba(124,58,237,0.25); }
+          100% { border-color: rgba(124, 58, 237, 0.3); box-shadow: inset 0 0 0 rgba(124,58,237,0), 0 0 12px rgba(124,58,237,0.1); }
         }
       `}</style>
     </motion.div>

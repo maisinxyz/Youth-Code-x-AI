@@ -9,29 +9,33 @@ const TYPES = [
 ] as const;
 
 const GLASS = {
-  background: "rgba(0,0,0,0.55)",
-  border: "1px solid rgba(255,255,255,0.07)",
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(124, 58, 237, 0.15)",
   backdropFilter: "blur(16px)",
+  boxShadow: "0 4px 24px -4px rgba(124, 58, 237, 0.15)", // Featherlight purple tinted shadow
 };
 
 export function LegendPanel() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -12, x: "-50%" }}
+      animate={{ opacity: 1, y: 0, x: "-50%" }}
       transition={{ duration: 0.7, delay: 0.4, ease: [0, 0, 0.2, 1] }}
-      className="pointer-events-none fixed left-1/2 top-6 z-20 -translate-x-1/2"
+      className="pointer-events-none fixed left-1/2 top-6 z-20"
     >
-      <div className="flex items-center gap-4 rounded-full px-5 py-2.5" style={GLASS}>
+      <div className="flex items-center gap-5 rounded-full px-6 py-2.5" style={GLASS}>
         {TYPES.map(({ key, label, alpha }) => (
-          <div key={key} className="flex items-center gap-1.5">
+          <div key={key} className="flex items-center gap-2">
             <span
               className="h-1.5 w-1.5 flex-shrink-0 rounded-full"
-              style={{ background: `rgba(255,255,255,${alpha})` }}
+              style={{ 
+                background: `rgba(255,255,255,${alpha})`,
+                boxShadow: `0 0 6px rgba(255,255,255,${alpha * 0.8})`
+              }}
             />
             <span
-              className="font-mono text-[10px] tracking-wide"
-              style={{ color: `rgba(255,255,255,${alpha * 0.65})` }}
+              className="font-mono text-[9px] uppercase tracking-[0.12em]"
+              style={{ color: `rgba(255,255,255,${alpha * 0.75})` }}
             >
               {label}
             </span>

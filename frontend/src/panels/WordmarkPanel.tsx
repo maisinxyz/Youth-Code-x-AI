@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-
 import { Link } from "react-router-dom";
 
 export function WordmarkPanel() {
@@ -11,12 +10,12 @@ export function WordmarkPanel() {
       className="fixed left-6 top-6 z-20"
     >
       <Link to="/" className="flex flex-col group">
-        <span className="font-display text-lg font-extrabold tracking-display text-white/80 transition-colors group-hover:text-white">
-          ENGRAM
-        </span>
-        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-white/30 transition-colors group-hover:text-white/50">
-          Company Memory
-        </p>
+        <img 
+          src="/engram-logo.png" 
+          alt="Engram Logo"
+          className="h-9 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+          style={{ filter: "drop-shadow(0 0 12px rgba(124, 58, 237, 0.4))" }}
+        />
       </Link>
     </motion.div>
   );

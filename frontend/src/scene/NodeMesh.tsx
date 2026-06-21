@@ -4,6 +4,9 @@ import * as THREE from "three";
 import type { GraphNode } from "../lib/api";
 import { speechAmplitudeRef } from "./speechAmplitude";
 
+const PURPLE = new THREE.Color("#9B5DE5");
+const BASE_EMISSIVE = new THREE.Color("#fff4ed");
+
 const TYPE_BRIGHTNESS: Record<string, number> = {
   decision:      1.0,
   person:        0.85,
@@ -64,6 +67,10 @@ export function NodeMesh({
       ? 3.5 + amp * 2.0
       : baseBrightness * 1.8 + amp * 0.4;
     mat.emissiveIntensity += (targetEmissive - mat.emissiveIntensity) * 0.08;
+
+    // Tint amethyst near the bottom (where chat bar is)
+    const mix = Math.min(0.8, Math.max(0, -position.y * 0.12));
+    mat.emissive.copy(BASE_EMISSIVE).lerp(PURPLE, activated ? 0.8 : mix);
   });
 
   return (

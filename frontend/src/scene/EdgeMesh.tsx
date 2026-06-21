@@ -17,10 +17,17 @@ export function EdgeMesh({ from, to, strength = 1, activated = false }: EdgeMesh
     ? 0.9 + strength * 0.4
     : 0.35 + strength * 0.15;
 
+  const midY = (from.y + to.y) / 2;
+  const mix = Math.min(0.8, Math.max(0, -midY * 0.12));
+  
+  const c = new THREE.Color("#ffffff");
+  const p = new THREE.Color("#7C3AED");
+  c.lerp(p, activated ? 0.8 : mix);
+
   return (
     <Line
       points={[from.toArray() as [number, number, number], to.toArray() as [number, number, number]]}
-      color="#ffffff"
+      color={c}
       transparent
       opacity={opacity}
       lineWidth={width}
