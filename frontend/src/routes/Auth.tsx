@@ -3,6 +3,8 @@ import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useConnectorsStore } from "../state/connectors";
+import type { ConnectorName } from "../lib/api";
 
 // ── Primary 6 connectors ─────────────────────────────────────────────
 const PRIMARY_CONNECTORS = [
@@ -118,7 +120,7 @@ import { WordmarkPanel } from "../panels/WordmarkPanel";
 // ── Main Auth Page ───────────────────────────────────────────────────
 export default function Auth() {
   const navigate = useNavigate();
-  const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
+  const { connected, toggleConnector, setConnected } = useConnectorsStore();
   const [showMore, setShowMore] = useState(false);
 
   const handleConnect = async (id: string) => {
@@ -168,8 +170,11 @@ export default function Auth() {
         'figma': 'figma'
       };
       const connectedIds = providers.map(p => reverseMapping[p]).filter(Boolean);
-      setConnectedIds(new Set(connectedIds));
+      setConnected(new Set(connectedIds as ConnectorName[]));
     };
+
+    // On mount, start with empty state for real auth flow
+    setConnected(new Set());
 
     // Check existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -190,9 +195,9 @@ export default function Auth() {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [setConnected]);
 
-  const totalConnected = connectedIds.size;
+  const totalConnected = connected.size;
   const canProceed = totalConnected >= 1;
 
   return (
@@ -249,7 +254,7 @@ export default function Auth() {
             <ConnectorCard
               key={c.id}
               connector={c}
-              connected={connectedIds.has(c.id)}
+              connected={connected.has(c.id as ConnectorName)}
               onConnect={() => handleConnect(c.id)}
               index={i}
             />
@@ -283,7 +288,7 @@ export default function Auth() {
                   <ConnectorCard
                     key={c.id}
                     connector={c}
-                    connected={connectedIds.has(c.id)}
+                    connected={connected.has(c.id as ConnectorName)}
                     onConnect={() => handleConnect(c.id)}
                     index={i}
                   />

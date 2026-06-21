@@ -83,14 +83,14 @@ export function Navbar() {
               <Link to="/auth-proxy">Log In</Link>
             </Button>
             <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
-              <Link to="/auth">Sign Up</Link>
+              <Link to="/signup">Sign Up</Link>
             </Button>
           </div>
 
           {/* Mobile Menu & CTAs */}
           <div className="flex items-center gap-2 md:hidden">
             <Button asChild size="sm" className="text-xs font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
-              <Link to="/auth">Sign Up</Link>
+              <Link to="/signup">Sign Up</Link>
             </Button>
             
             <Popover>

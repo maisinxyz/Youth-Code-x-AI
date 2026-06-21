@@ -45,6 +45,8 @@ type ConnectorsState = {
   connected: Set<ConnectorName>;
   /** Toggle a connector's connected state on/off */
   toggleConnector: (name: ConnectorName) => void;
+  /** Set the connected set directly */
+  setConnected: (connectors: Set<ConnectorName>) => void;
   ingestConnector: (name: ConnectorName) => Promise<void>;
 };
 
@@ -70,6 +72,7 @@ export const useConnectorsStore = create<ConnectorsState>((set) => ({
       return { connected: next };
     });
   },
+  setConnected: (connectors) => set({ connected: connectors }),
   ingestConnector: async (name) => {
     set((s) => ({ statuses: { ...s.statuses, [name]: "ingesting" } }));
     try {
