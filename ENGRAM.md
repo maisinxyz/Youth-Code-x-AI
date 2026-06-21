@@ -3,7 +3,7 @@
 > This is the single source of truth for the Engram codebase as it exists right now. Update this file after every task. If something is not in this file, it does not exist in the project.
 
 **Last updated:** 2026-05-08
-**Current phase:** Phase 3 — Frontend §9 + §10 COMPLETE ✅ | §11 Connector selection screen next
+**Current phase:** Phase 3 — Frontend §9 + §10 + §11 COMPLETE ✅ | §12 Brain loading animation next
 
 ---
 
@@ -457,8 +457,9 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done · 🔒 blocked
 
 ### Phase 3 — Frontend
 - ✅ §9 Frontend scaffold (Vite + React 19 + TS, Tailwind v3 token-mapped, react-router v7, Zustand, openapi-typescript types, Vercel SPA config)
-- ✅ §10 Landing page — adapted PrismaHero (WordsPullUp + R3F particle field bg + Login → /connect), HowItWorks, BrainPreview (ContainerScroll + MiniBrain R3F), ConnectorMosaic, SplineSection (lazy spline-viewer), CTA → /connect
-- ⬜ §11 Connector selection screen
+- ✅ §10 Landing page — PrismaHero exact (cinematic video bg, rounded container, giant ENGRAM wordmark, cream text, white CTA), HowItWorks, BrainPreview (ContainerScroll + MiniBrain R3F Bloom 80-node sphere), ConnectorMosaic (official logos), SplineSection (full-bleed with parallax text), CTA → /connect. All green removed — pure black/white SaaS palette throughout.
+- ✅ §11 Connector selection screen — FallingPattern bg, 6 cards with hardcoded official SVG logos (src/lib/connector-icons.ts), framer-motion stagger + pulse on select, "Select all" convenience, "Build your brain →" CTA → /loading
+- ⬜ §12 Brain loading animation — FallingPattern particles converge → crystallize into brain nodes
 - ⬜ §12 Brain loading animation
 - ⬜ §13 Three.js semantic graph — base render
 - ⬜ §14 Three.js — query reaction animations

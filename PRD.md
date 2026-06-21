@@ -288,10 +288,10 @@ Each numbered section below = one Claude Code build task. Subsections are allowe
 **Goal:** Run a structured discovery interview using the `shape` skill (and `impeccable teach` for design context) to produce a single design brief that guides every frontend implementation in Phase 3. **No frontend code is written until this brief is approved.**
 
 **Deliverables:**
-- Run `/impeccable teach` once to load the project's design context (forest green palette, dark canvas, cinematic motion).
+- Run `/impeccable teach` once to load the project's design context (pure black/white SaaS palette, dark canvas, cinematic motion).
 - Run `/shape` interview covering:
   1. **Global design language** — typography stack, spacing scale, motion philosophy (recommended: layered easing curves; refinement of motion over flash).
-  2. **Color system** — single accent (forest green `#2d6a4f`), node-type palette (decisions green / people white / tech grey / projects white / open questions grey), background depth layers.
+  2. **Color system** — pure black/white SaaS palette. No accent color. Node states use brightness (dim white → bright white) not color. Background depth layers: #000 → #0a0a0a → #111.
   3. **Landing page** — hero copy, scroll narrative beats, feature sections, the "Proceed →" CTA.
   4. **Connector selection screen** — card layout grid, hover affordance, "connecting" animation, particle stream behavior, "Build your brain →" CTA.
   5. **Brain loading screen** — particle source points, crystallization choreography, edge formation timing, transition into main view.
@@ -384,8 +384,8 @@ Each numbered section below = one Claude Code build task. Subsections are allowe
 
 **Deliverables:**
 - `src/routes/Connect.tsx`:
-  - Grid of 6 cards: Slack, Notion, Google Drive, Confluence, Jira, Teams. Each card uses official-ish wordmarks (no logos requiring license — use simple typography per BRIEF).
-  - Click → card pulses and turns its border forest green; emits a particle stream from the card center toward screen center (Three.js or canvas overlay; recommend a single canvas overlay shared across all cards for perf).
+  - Grid of 6 cards: Slack, Notion, Google Drive, Confluence, Jira, Teams. Each card uses the official logo (SVG path from `src/lib/connector-icons.ts`). FallingPattern component fills the background.
+  - Click → card pulses (scale 1→1.04→1), border becomes white/35 opacity, white check badge appears top-right. FallingPattern background is the ambient particle effect — no per-card particle stream needed.
   - On click, fire `POST /ingest/connector/{name}` (await the response; show subtle spinner if >1s).
   - "Select all" convenience button (used in demo).
   - Once ≥1 connector is "connected": "Build your brain →" CTA appears, bottom center, navigating to `/loading`.
