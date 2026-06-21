@@ -14,7 +14,7 @@ export function WordmarkPanel() {
           src="/engram-logo.png" 
           alt="Engram Logo"
           className="h-9 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
-          style={{ filter: "drop-shadow(0 0 12px rgba(124, 58, 237, 0.4))" }}
+          style={{ filter: "drop-shadow(0 0 12px rgba(223, 155, 91, 0.4))" }}
         />
       </Link>
     </motion.div>

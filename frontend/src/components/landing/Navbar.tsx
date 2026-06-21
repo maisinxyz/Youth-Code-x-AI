@@ -46,7 +46,7 @@ export function Navbar() {
             <img
               src="/engram-logo.png"
               alt="Engram logo"
-              className="h-12 w-12 object-contain md:h-14 md:w-14"
+              className="h-9 w-9 object-contain md:h-10 md:w-10"
               style={{ imageRendering: "crisp-edges" }}
             />
           </Link>
@@ -60,7 +60,7 @@ export function Navbar() {
                     <NavigationMenuLink asChild>
                       <a
                         href={link.href}
-                        className="border-b-2 border-transparent hover:border-b-[#7c3aed] px-3 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
+                        className="border-b-2 border-transparent hover:border-b-[#df9b5b] px-3 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
                       >
                         {link.label}
                       </a>
@@ -81,14 +81,14 @@ export function Navbar() {
             <Button asChild variant="ghost" size="sm" className="text-sm text-white/70">
               <Link to="/auth-proxy">Log In</Link>
             </Button>
-            <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
+            <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "linear-gradient(135deg, #df9b5b 0%, #b45e1b 100%)" }}>
               <Link to="/signup">Sign Up</Link>
             </Button>
           </div>
 
           {/* Mobile Menu & CTAs */}
           <div className="flex items-center gap-2 md:hidden">
-            <Button asChild size="sm" className="text-xs font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
+            <Button asChild size="sm" className="text-xs font-semibold text-white hover:brightness-110 border-none" style={{ background: "linear-gradient(135deg, #df9b5b 0%, #b45e1b 100%)" }}>
               <Link to="/signup">Sign Up</Link>
             </Button>
             
