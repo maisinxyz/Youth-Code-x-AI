@@ -8,12 +8,12 @@ const DEG = Math.PI / 180;
 
 // 6 connector sectors arranged evenly around the sphere
 const SECTOR_CENTERS: Record<string, THREE.Vector3> = {
-  slack:       sphericalToVec(0   * DEG,  20 * DEG, 4.2),
-  notion:      sphericalToVec(60  * DEG, -15 * DEG, 4.2),
-  drive:       sphericalToVec(120 * DEG,  25 * DEG, 4.2),
-  confluence:  sphericalToVec(180 * DEG, -10 * DEG, 4.2),
-  jira:        sphericalToVec(240 * DEG,  15 * DEG, 4.2),
-  teams:       sphericalToVec(300 * DEG, -20 * DEG, 4.2),
+  slack:       sphericalToVec(0   * DEG,  20 * DEG, 7.5),
+  notion:      sphericalToVec(60  * DEG, -15 * DEG, 7.5),
+  drive:       sphericalToVec(120 * DEG,  25 * DEG, 7.5),
+  confluence:  sphericalToVec(180 * DEG, -10 * DEG, 7.5),
+  jira:        sphericalToVec(240 * DEG,  15 * DEG, 7.5),
+  teams:       sphericalToVec(300 * DEG, -20 * DEG, 7.5),
 };
 
 function sphericalToVec(azimuth: number, elevation: number, radius: number): THREE.Vector3 {
@@ -50,7 +50,7 @@ export function computeLayout(nodes: GraphNode[], edges: GraphEdge[]): LayoutMap
   // Place each group in its sector using a mini fibonacci sphere around the sector center
   for (const [src, groupNodes] of Object.entries(groups)) {
     const center = SECTOR_CENTERS[src];
-    const spread = 1.6; // radius of the mini-sphere for this cluster
+    const spread = 2.8; // radius of the mini-sphere for this cluster
     groupNodes.forEach((node, i) => {
       const n = groupNodes.length;
       const y = 1 - (i / Math.max(n - 1, 1)) * 2;
@@ -76,9 +76,9 @@ export function computeLayout(nodes: GraphNode[], edges: GraphEdge[]): LayoutMap
   });
 
   // Spring relaxation — intra-cluster repulsion + edge attraction
-  const REPEL = 3.0;
-  const ATTRACT = 0.08;
-  const MIN_D = 0.5;
+  const REPEL = 6.0;
+  const ATTRACT = 0.05;
+  const MIN_D = 0.8;
   const vel = new Map<string, THREE.Vector3>(nodes.map((n) => [n.id, new THREE.Vector3()]));
   const tmp = new THREE.Vector3();
 
@@ -129,7 +129,7 @@ export function computeLayout(nodes: GraphNode[], edges: GraphEdge[]): LayoutMap
       v.multiplyScalar(0.82);
       // Clamp to reasonable range
       const len = p.length();
-      if (len > 7) p.multiplyScalar(7 / len);
+      if (len > 12) p.multiplyScalar(12 / len);
       if (len < 0.5) p.multiplyScalar(0.5 / len);
     });
   }

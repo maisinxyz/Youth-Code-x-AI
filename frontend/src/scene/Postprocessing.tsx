@@ -7,9 +7,9 @@ export function Postprocessing() {
   return (
     <EffectComposer>
       <Bloom
-        intensity={1.1}
-        luminanceThreshold={0.2}
-        luminanceSmoothing={0.9}
+        intensity={0.4}
+        luminanceThreshold={0.8}
+        luminanceSmoothing={0.4}
         mipmapBlur
       />
       <ChromaticAberration
