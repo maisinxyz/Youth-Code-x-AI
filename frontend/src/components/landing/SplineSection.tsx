@@ -1,34 +1,15 @@
-import {
-  motion,
-  useInView,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const SPLINE_URL = "https://prod.spline.design/mdG65j-kMjHPLuEK/scene.splinecode";
 const EASE_OUT = [0, 0, 0.2, 1] as const;
 
 export function SplineSection() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const splineRef    = useRef<HTMLDivElement>(null);
-  const copyRef      = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const inView       = useInView(sectionRef, { once: false, margin: "-5%" });
-  const copyInView   = useInView(copyRef, { once: true, margin: "-10%" });
+  const sectionRef = useRef<HTMLElement>(null);
+  const copyRef    = useRef<HTMLDivElement>(null);
+  const inView     = useInView(sectionRef, { once: false, margin: "-5%" });
+  const copyInView = useInView(copyRef, { once: true, margin: "-10%" });
   const [shouldMount, setShouldMount] = useState(false);
-
-  // Scroll parallax — vertical drift on the Spline panel
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const splineY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduceMotion ? ["0%", "0%"] : ["8%", "-8%"],
-  );
 
   useEffect(() => {
     if (inView && !shouldMount) setShouldMount(true);
@@ -50,7 +31,7 @@ export function SplineSection() {
       />
 
       {/* ── Side-by-side grid ──────────────────────────────────────── */}
-      <div className="grid min-h-[75vh] grid-cols-1 items-center gap-0 md:grid-cols-[1fr_1.35fr]">
+      <div className="grid grid-cols-1 items-center gap-0 md:grid-cols-[1fr_1.35fr]" style={{ minHeight: "520px" }}>
 
         {/* ── LEFT: Copy column ─────────────────────────────────────── */}
         <div
@@ -117,21 +98,18 @@ export function SplineSection() {
 
         {/* ── RIGHT: Spline panel ───────────────────────────────────── */}
         <div
-          ref={splineRef}
           className="relative overflow-hidden"
-          style={{ minHeight: "clamp(380px, 75vh, 700px)" }}
+          style={{ height: "520px" }}
         >
-          {/* Spline with scroll parallax */}
+          {/* Spline — fixed size, no pointer events, spins autonomously */}
           {shouldMount && (
-            <motion.div
-              style={{ y: splineY }}
-              className="absolute inset-[-6%]"
-            >
+            <div className="absolute inset-0 pointer-events-none">
               <spline-viewer
                 url={SPLINE_URL}
+                events-target="none"
                 style={{ width: "100%", height: "100%", background: "transparent" }}
               />
-            </motion.div>
+            </div>
           )}
 
           {/* Left edge gradient — blends Spline into the copy column */}
