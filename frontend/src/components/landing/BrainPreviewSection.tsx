@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 import { ContainerScroll } from "../ui/container-scroll-animation";
-import { MiniBrain } from "./MiniBrain";
+import { BrainVideo } from "./BrainVideo";
 
 export function BrainPreviewSection() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ export function BrainPreviewSection() {
           </motion.div>
         }
       >
-        <MiniBrain />
+        <BrainVideo />
       </ContainerScroll>
     </section>
   );
