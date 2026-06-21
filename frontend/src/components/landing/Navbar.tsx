@@ -14,25 +14,85 @@ import { Link } from "react-router-dom"
 
 const navigationLinks = [
   { href: "#how-it-works", label: "How it works" },
-  { href: "#connectors", label: "Connectors" },
   { href: "#demo", label: "Demo" },
+  { href: "#connectors", label: "Connectors" },
+  { href: "#semantic-search", label: "Semantic Search" },
 ]
 
 export function Navbar() {
   return (
     <header 
-      className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 px-4 md:px-6"
+      className="fixed left-0 right-0 top-0 z-50 border-b border-white/10"
       style={{
         background: "oklch(8% 0 0 / 80%)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
       }}
     >
-      <div className="mx-auto flex h-16 max-w-7xl justify-between gap-4">
-        {/* Left side */}
-        <div className="flex gap-2">
-          <div className="flex items-center md:hidden">
-            {/* Mobile menu trigger */}
+      <div className="flex h-16 md:h-20 w-full items-center justify-between gap-4 px-4 md:px-8">
+        
+        {/* Left side: Logo + Desktop Nav */}
+        <div className="flex items-center gap-6 md:gap-8">
+          
+          <Link 
+            to="/" 
+            onClick={(e) => {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center transition-opacity hover:opacity-90"
+          >
+            <img
+              src="/engram-logo.png"
+              alt="Engram logo"
+              className="h-12 w-12 object-contain md:h-14 md:w-14"
+              style={{ imageRendering: "crisp-edges" }}
+            />
+          </Link>
+          
+          {/* Navigation menu - desktop */}
+          <div className="hidden md:block">
+            <NavigationMenu>
+              <NavigationMenuList className="gap-2">
+                {navigationLinks.map((link, index) => (
+                  <NavigationMenuItem key={index}>
+                    <NavigationMenuLink asChild>
+                      <a
+                        href={link.href}
+                        className="border-b-2 border-transparent hover:border-b-[#7c3aed] px-3 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </a>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+
+        </div>
+        
+        {/* Right side: CTAs and Mobile Menu */}
+        <div className="flex items-center gap-2">
+          
+          {/* Desktop CTAs */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm" className="text-sm text-white/70">
+              <Link to="/auth">Log In</Link>
+            </Button>
+            <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
+              <Link to="/waitlist">Sign Up</Link>
+            </Button>
+          </div>
+
+          {/* Mobile Menu & CTAs */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Button asChild size="sm" className="text-xs font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(45% 0.18 300)" }}>
+              <Link to="/waitlist">Sign Up</Link>
+            </Button>
+            
             <Popover>
               <PopoverTrigger asChild>
                 <Button className="group size-8 hover:bg-white/5 hover:text-white" variant="ghost" size="icon">
@@ -63,7 +123,7 @@ export function Navbar() {
                   </svg>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="start" className="w-48 p-1 md:hidden border-white/10 bg-black/95">
+              <PopoverContent align="end" className="w-48 p-1 border-white/10 bg-black/95">
                 <NavigationMenu className="max-w-none *:w-full">
                   <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
                     {navigationLinks.map((link, index) => (
@@ -78,57 +138,23 @@ export function Navbar() {
                         </NavigationMenuLink>
                       </NavigationMenuItem>
                     ))}
+                    <div className="mx-1 my-1 h-px w-full bg-white/10" />
+                    <NavigationMenuItem className="w-full">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/auth"
+                          className="block rounded-md px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                        >
+                          Log In
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
                   </NavigationMenuList>
                 </NavigationMenu>
               </PopoverContent>
             </Popover>
           </div>
-          
-          {/* Main nav */}
-          <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2.5 no-underline transition-opacity hover:opacity-90">
-              <img
-                src="/engram-logo.png"
-                alt="Engram logo"
-                className="h-8 w-8 object-contain"
-                style={{ imageRendering: "crisp-edges" }}
-              />
-              <span
-                className="font-display text-xl font-extrabold tracking-tight"
-                style={{ color: "#E1E0CC", letterSpacing: "-0.04em" }}
-              >
-                ENGRAM
-              </span>
-            </Link>
-            
-            {/* Navigation menu - desktop */}
-            <NavigationMenu className="max-md:hidden">
-              <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    <NavigationMenuLink asChild>
-                      <a
-                        href={link.href}
-                        className="border-b-2 border-transparent hover:border-b-[#2d6a4f] px-3 py-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
-                      >
-                        {link.label}
-                      </a>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-        </div>
-        
-        {/* Right side */}
-        <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex text-white/70">
-            <Link to="/auth">Log In</Link>
-          </Button>
-          <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "oklch(42% 0.095 162)" }}>
-            <Link to="/waitlist">Get Started</Link>
-          </Button>
+
         </div>
       </div>
     </header>

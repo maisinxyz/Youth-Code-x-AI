@@ -17,6 +17,7 @@ export function SplineSection() {
 
   return (
     <section
+      id="semantic-search"
       ref={sectionRef}
       className="relative bg-black overflow-hidden"
       style={{ paddingTop: "clamp(80px, 10vw, 140px)" }}
