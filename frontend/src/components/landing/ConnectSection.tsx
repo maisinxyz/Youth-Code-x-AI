@@ -70,7 +70,10 @@ function HorizontalBelt() {
                 draggable={false}
               />
             </div>
-            <span className="font-mono text-[9px] text-white/20 tracking-wide whitespace-nowrap">
+            <span
+              className="font-mono text-[9px] tracking-wide whitespace-nowrap"
+              style={{ color: "rgba(225,224,204,0.3)" }}
+            >
               {c.label}
             </span>
           </div>
@@ -124,7 +127,10 @@ export function ConnectSection() {
                 <ArrowRight className="h-3.5 w-3.5 text-white" />
               </span>
             </button>
-            <p className="font-mono text-[11px] text-white/20 pl-1">
+            <p
+              className="font-mono text-[11px] pl-1"
+              style={{ color: "rgba(225,224,204,0.35)" }}
+            >
               All sources connected
             </p>
           </motion.div>
@@ -137,7 +143,7 @@ export function ConnectSection() {
           className="h-px w-full"
           style={{
             background:
-              "radial-gradient(50% 50% at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 100%)",
+              "radial-gradient(50% 50% at 50% 50%, rgba(225,224,204,0.18) 0%, transparent 100%)",
           }}
         />
       </div>

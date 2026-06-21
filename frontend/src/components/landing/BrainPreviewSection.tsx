@@ -19,7 +19,10 @@ export function BrainPreviewSection() {
             transition={{ duration: 0.8, ease: [0, 0, 0.2, 1] }}
             className="px-6"
           >
-            <p className="mb-3 text-xs uppercase tracking-wide text-text-muted">
+            <p
+              className="mb-3 font-mono text-xs uppercase tracking-wide"
+              style={{ color: "rgba(225,224,204,0.6)" }}
+            >
               The brain
             </p>
             <h2 className="mb-4 font-display text-2xl font-extrabold tracking-display text-text-primary md:text-3xl">

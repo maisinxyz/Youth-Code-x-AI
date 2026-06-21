@@ -37,7 +37,7 @@ export function FooterSection() {
         className="h-px w-full"
         style={{
           background:
-            "radial-gradient(50% 100% at 50% 0%, rgba(255,255,255,0.12) 0%, transparent 100%)",
+            "radial-gradient(50% 100% at 50% 0%, rgba(225,224,204,0.14) 0%, transparent 100%)",
         }}
       />
 
