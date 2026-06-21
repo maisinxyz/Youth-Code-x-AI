@@ -85,7 +85,7 @@ export function ConnectSection() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-screen bg-black overflow-hidden flex flex-col">
+    <div id="connectors" className="relative h-screen bg-black overflow-hidden flex flex-col">
 
       {/* ── "Built for any source" — compact single viewport ── */}
       <div className="flex-1 min-h-0 flex items-center">
