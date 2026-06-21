@@ -65,9 +65,7 @@ export function SplineSection() {
             transition={{ duration: 0.6, delay: 0.22, ease: EASE_OUT }}
             className="mb-8 max-w-sm font-mono text-sm leading-relaxed text-white/45"
           >
-            Engram maps the connective tissue beneath every decision your
-            team has ever made — the meetings that shaped strategy, the
-            threads that became policy.
+            Engram maps the anatomy of your decisions. We continuously index the meetings that shaped your strategy and the threads that became your policy.
           </motion.p>
 
           {/* Three micro-stats */}

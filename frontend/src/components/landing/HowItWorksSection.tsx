@@ -5,17 +5,17 @@ const STEPS = [
   {
     n: "01",
     title: "Connect",
-    body: "Plug in Slack, Notion, Drive, Confluence, Jira, Teams. Engram ingests messages, docs, decisions — every source your team already lives in.",
+    body: "Authorize your active platforms. We continuously index every thread, document, and ticket without migrating a single byte.",
   },
   {
     n: "02",
-    title: "Build",
-    body: "We extract entities, relationships, and decisions. The semantic graph assembles itself in 3D — sectioned by source, lit by meaning.",
+    title: "Map",
+    body: "Raw text becomes structural memory. The system extracts entities and relationships to assemble a spatial graph of your organization.",
   },
   {
     n: "03",
-    title: "Ask",
-    body: "Speak or type. The cascade travels the graph, surfaces the relevant context, and answers with traceable sources.",
+    title: "Query",
+    body: "State your question. The engine traverses the graph to synthesize exact answers, backed by hard citations from the original sources.",
   },
 ];
 
@@ -64,8 +64,13 @@ export function HowItWorksSection() {
           <p className="mb-3 text-xs uppercase tracking-wide text-text-muted">
             How it works
           </p>
-          <h2 className="font-display text-2xl font-extrabold tracking-display text-text-primary md:text-3xl">
-            Three steps. Built once. Queried forever.
+          <h2 className="flex flex-col gap-1 md:gap-2">
+            <span className="font-display text-2xl font-extrabold tracking-display text-text-primary md:text-3xl">
+              Search less. Know more.
+            </span>
+            <span className="font-display text-lg font-bold tracking-tight text-text-secondary md:text-2xl">
+              Your team with perfect memory.
+            </span>
           </h2>
         </header>
 
