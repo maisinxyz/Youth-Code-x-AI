@@ -15,7 +15,15 @@ export type ConnectorName =
   | "drive"
   | "confluence"
   | "jira"
-  | "teams";
+  | "teams"
+  | "github"
+  | "linear"
+  | "figma"
+  | "asana"
+  | "discord"
+  | "dropbox"
+  | "trello"
+  | "gmail";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 

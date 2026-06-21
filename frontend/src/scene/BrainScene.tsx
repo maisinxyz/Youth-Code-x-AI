@@ -67,8 +67,7 @@ export function BrainScene({
 
   // Resolve the live graph (or demo fallback when backend is empty/down).
   const { nodes, edges } = useMemo(() => {
-    if (storeNodes.length > 0) return { nodes: storeNodes, edges: storeEdges };
-    return makeDemoGraph();
+    return { nodes: storeNodes, edges: storeEdges };
   }, [storeNodes, storeEdges]);
 
   // Layout runs the 50-iter spring relaxation — expensive (O(N²)). Compute

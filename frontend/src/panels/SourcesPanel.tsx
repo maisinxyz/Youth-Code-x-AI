@@ -1,18 +1,27 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Database } from "lucide-react";
+import { Database, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { CONNECTOR_LOGOS } from "../lib/connector-icons";
 import { useConnectorsStore } from "../state/connectors";
 import type { ConnectorName } from "../lib/api";
 
-type ConnectorStatus = "idle" | "ingesting" | "done" | "error";
-
-const STATUS_DOT: Record<ConnectorStatus, string> = {
-  idle:      "rgba(255,255,255,0.15)",
-  ingesting: "rgba(255,255,255,0.55)",
-  done:      "rgba(255,255,255,0.85)",
-  error:     "rgba(220,80,80,0.85)",
-};
+// ── All 14 Connectors ──────────────────────────────────────────────────
+const ALL_CONNECTORS: ConnectorName[] = [
+  "slack",
+  "notion",
+  "drive",
+  "confluence",
+  "jira",
+  "teams",
+  "github",
+  "linear",
+  "figma",
+  "asana",
+  "discord",
+  "dropbox",
+  "trello",
+  "gmail",
+];
 
 const GLASS = {
   background: "rgba(0,0,0,0.55)",
@@ -20,10 +29,63 @@ const GLASS = {
   backdropFilter: "blur(12px)",
 };
 
+// ── Single connector row (View-only, no toggle) ───────────────────────
+function ConnectorRow({
+  name,
+  isConnected,
+}: {
+  name: ConnectorName;
+  isConnected: boolean;
+}) {
+  const logo = CONNECTOR_LOGOS[name];
+  if (!logo) return null;
+
+  const dotColor = isConnected
+    ? "rgba(74,222,128,0.9)"   // green
+    : "rgba(255,255,255,0.15)"; // grey
+
+  const dotGlow = isConnected
+    ? "0 0 8px rgba(74,222,128,0.5)"
+    : "none";
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.25 }}
+      className="flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-colors"
+    >
+      {/* Logo */}
+      <img
+        src={logo.src}
+        alt={logo.alt}
+        className="h-3.5 w-3.5 object-contain flex-shrink-0"
+      />
+
+      {/* Label */}
+      <span className="w-16 font-mono text-[10px] text-white/35 select-none">
+        {logo.alt}
+      </span>
+
+      {/* Status dot */}
+      <span
+        className="h-1.5 w-1.5 flex-shrink-0 rounded-full transition-all duration-500"
+        style={{ background: dotColor, boxShadow: dotGlow }}
+      />
+    </motion.div>
+  );
+}
+
+// ── Sources panel ─────────────────────────────────────────────────────
 export function SourcesPanel() {
-  const { statuses } = useConnectorsStore();
-  const entries = Object.entries(statuses) as [ConnectorName, ConnectorStatus][];
+  const { connected } = useConnectorsStore();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  const connectedSources = ALL_CONNECTORS.filter((c) => connected.has(c));
+  const unconnectedSources = ALL_CONNECTORS.filter((c) => !connected.has(c));
 
   return (
     <motion.div
@@ -32,56 +94,101 @@ export function SourcesPanel() {
       transition={{ duration: 0.7, delay: 0.5, ease: [0, 0, 0.2, 1] }}
       className="fixed bottom-8 left-6 z-20 flex flex-col items-start"
     >
-      <div 
-        className="flex flex-col rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-500 hover:bg-white/[0.02]" 
+      <div
+        className="flex flex-col rounded-2xl p-4 cursor-pointer overflow-hidden transition-all duration-500 hover:bg-white/[0.02]"
         style={GLASS}
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          if (isExpanded) {
+            // Collapse everything
+            setIsExpanded(false);
+            setShowMore(false);
+          } else {
+            setIsExpanded(true);
+          }
+        }}
       >
+        {/* Header */}
         <div className="flex items-center gap-3">
-           <Database size={14} className="text-white/40" />
-           <AnimatePresence>
-             {isExpanded && (
-               <motion.span 
-                 initial={{ opacity: 0, width: 0 }}
-                 animate={{ opacity: 1, width: "auto" }}
-                 exit={{ opacity: 0, width: 0 }}
-                 className="font-mono text-[9px] uppercase tracking-widest text-white/40 whitespace-nowrap overflow-hidden"
-               >
-                 Sources
-               </motion.span>
-             )}
-           </AnimatePresence>
+          <Database size={14} className="text-white/40" />
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="font-mono text-[9px] uppercase tracking-widest text-white/40 whitespace-nowrap overflow-hidden"
+              >
+                Sources
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
-        
+
+        {/* Expanded connector list */}
         <AnimatePresence>
           {isExpanded && (
-            <motion.div 
+            <motion.div
               initial={{ height: 0, opacity: 0, marginTop: 0 }}
               animate={{ height: "auto", opacity: 1, marginTop: 12 }}
               exit={{ height: 0, opacity: 0, marginTop: 0 }}
-              className="flex flex-col gap-2 overflow-hidden"
+              className="flex flex-col gap-0.5 overflow-hidden"
             >
-              {entries.map(([name, status]) => {
-                const logo = CONNECTOR_LOGOS[name];
-                if (!logo) return null;
-                return (
-                  <div key={name} className="group relative flex items-center gap-2.5 px-2 py-1.5 transition-colors hover:bg-white/[0.04] rounded-md">
-                    <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-[#7C3AED] opacity-0 transition-opacity group-hover:opacity-100" />
-                    <img
-                      src={logo.src}
-                      alt={logo.alt}
-                      className="h-3.5 w-3.5 object-contain"
-                    />
-                    <span className="w-16 font-mono text-[10px] text-white/35 transition-colors group-hover:text-white/60">
-                      {logo.alt}
-                    </span>
-                    <span
-                      className="h-1.5 w-1.5 flex-shrink-0 rounded-full transition-colors duration-700"
-                      style={{ background: STATUS_DOT[status], boxShadow: `0 0 6px ${STATUS_DOT[status]}` }}
-                    />
-                  </div>
-                );
-              })}
+              {/* Connected sources always visible */}
+              {connectedSources.map((name) => (
+                <ConnectorRow
+                  key={name}
+                  name={name}
+                  isConnected={true}
+                />
+              ))}
+
+              {connectedSources.length === 0 && (
+                <div className="px-2 py-1.5 text-[10px] font-mono text-white/30 italic">
+                  No sources connected
+                </div>
+              )}
+
+              {/* "More" button (only if there are unconnected sources) */}
+              {unconnectedSources.length > 0 && (
+                <motion.button
+                  layout
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMore(!showMore);
+                  }}
+                  className="flex items-center justify-center gap-1.5 mt-1 py-1.5 rounded-md font-mono text-[9px] uppercase tracking-widest text-white/20 hover:text-white/40 hover:bg-white/[0.03] transition-all duration-300"
+                >
+                  <span>{showMore ? "Less" : "More"}</span>
+                  <motion.span
+                    animate={{ rotate: showMore ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center"
+                  >
+                    <ChevronDown size={10} />
+                  </motion.span>
+                </motion.button>
+              )}
+
+              {/* Unconnected sources (hidden until "More" is clicked) */}
+              <AnimatePresence>
+                {showMore && unconnectedSources.length > 0 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col gap-0.5 overflow-hidden"
+                  >
+                    {unconnectedSources.map((name) => (
+                      <ConnectorRow
+                        key={name}
+                        name={name}
+                        isConnected={false}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
