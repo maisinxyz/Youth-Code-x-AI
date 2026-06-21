@@ -19,6 +19,7 @@ export function useTTS(): TTSHook {
   const audioRef  = useRef<HTMLAudioElement | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const prevUrlRef = useRef<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   /** Lazily initialise AudioContext + MediaElementSource on first user gesture */
   const ensureAudioPipeline = useCallback(() => {
@@ -50,7 +51,19 @@ export function useTTS(): TTSHook {
   }, [analyserNode]);
 
   const stop = useCallback(() => {
-    audioRef.current?.pause();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    if (audioRef.current) {
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+      audioRef.current.pause();
+      audioRef.current.removeAttribute('src');
+      audioRef.current.load();
+    }
+
     window.speechSynthesis?.cancel();
     setIsSpeaking(false);
   }, []);
@@ -66,35 +79,38 @@ export function useTTS(): TTSHook {
     }
 
     try {
-      const res = await fetch(`${BASE_URL}/tts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`TTS endpoint returned ${res.status}`);
-      }
-
-      const blob = await res.blob();
-      if (blob.size === 0) {
-        throw new Error("TTS returned empty audio");
-      }
-
-      // Revoke previous object URL to free memory
-      if (prevUrlRef.current) {
-        URL.revokeObjectURL(prevUrlRef.current);
-      }
-      const url = URL.createObjectURL(blob);
-      prevUrlRef.current = url;
-
+      // Stream directly from the GET endpoint for zero latency
+      const url = `${BASE_URL}/tts/stream?text=${encodeURIComponent(text)}`;
       audio.src = url;
       audio.onended  = () => setIsSpeaking(false);
-      audio.onerror  = () => setIsSpeaking(false);
+      audio.onerror  = () => {
+        // This handles cases where the backend returns a 5xx error
+        setIsSpeaking(false);
+        // Dispatch a custom event or just throw to trigger fallback
+        audio.dispatchEvent(new Event('fallback-needed'));
+      };
 
       setIsSpeaking(true);
-      await audio.play();
-    } catch (err) {
+      
+      // Wait for play to finish or fail
+      await new Promise<void>((resolve, reject) => {
+        const handleFallback = () => reject(new Error("Audio element error"));
+        audio.addEventListener('fallback-needed', handleFallback, { once: true });
+        
+        audio.play().then(() => {
+          audio.removeEventListener('fallback-needed', handleFallback);
+          resolve();
+        }).catch(err => {
+          audio.removeEventListener('fallback-needed', handleFallback);
+          reject(err);
+        });
+      });
+
+    } catch (err: any) {
+      if (err.name === "AbortError") {
+        console.log("[useTTS] Playback aborted");
+        return;
+      }
       // ── Browser TTS fallback ──────────────────────────────────────────────────
       console.warn("[useTTS] ElevenLabs failed, falling back to browser TTS:", err);
 

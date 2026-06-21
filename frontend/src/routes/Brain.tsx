@@ -13,7 +13,7 @@ import { useTTS } from "../voice/useTTS";
 
 export default function Brain() {
   const { activatedNodeIds, setActivatedNodes, clearActivated } = useGraphStore();
-  const { lastResponse } = useQueryStore();
+  const { lastResponse, reset: resetQuery } = useQueryStore();
   const { speak, stop, isSpeaking, analyserNode } = useTTS();
   const [isTTSMuted, setIsTTSMuted] = useState(false);
 
@@ -45,6 +45,14 @@ export default function Brain() {
     }
   }, [lastResponse, setActivatedNodes, clearActivated, speak, isTTSMuted]);
 
+  /** Stop everything: audio, panel, and activated nodes */
+  const handleFullStop = () => {
+    stop();                           // Kill audio playback
+    resetQuery();                     // Clear lastResponse → panel closes
+    clearActivated();                 // Un-highlight nodes
+    lastSpokenAnswerRef.current = null;
+  };
+
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* Full-screen Three.js brain — canvas consumes pointer events not covered by panels */}
@@ -62,7 +70,7 @@ export default function Brain() {
       <QueryBar />
       <ResponsePanel 
         isSpeaking={isSpeaking}
-        onStopTTS={stop}
+        onStopTTS={handleFullStop}
         isTTSMuted={isTTSMuted}
         onToggleMute={() => {
           setIsTTSMuted(prev => !prev);
