@@ -18,7 +18,6 @@ export function useTTS(): TTSHook {
   const ctxRef    = useRef<AudioContext | null>(null);
   const audioRef  = useRef<HTMLAudioElement | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const prevUrlRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /** Lazily initialise AudioContext + MediaElementSource on first user gesture */

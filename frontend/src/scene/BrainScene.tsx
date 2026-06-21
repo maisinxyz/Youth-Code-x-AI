@@ -6,7 +6,7 @@ import { EdgeMesh } from "./EdgeMesh";
 import { NodeMesh } from "./NodeMesh";
 import { Postprocessing } from "./Postprocessing";
 import { SpeechPulse } from "./SpeechPulse";
-import { computeLayout, makeDemoGraph, type LayoutMap } from "./layout";
+import { computeLayout, type LayoutMap } from "./layout";
 import { useGraphStore } from "../state/graph";
 import type { GraphEdge, GraphNode } from "../lib/api";
 
