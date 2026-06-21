@@ -4,12 +4,20 @@ import * as THREE from "three";
 import type { GraphNode } from "../lib/api";
 import { speechAmplitudeRef } from "./speechAmplitude";
 
+const TYPE_COLORS: Record<string, string> = {
+  decision:      "#f43f5e",
+  person:        "#a855f7",
+  project:       "#3b82f6",
+  tech:          "#10b981",
+  open_question: "#f59e0b",
+};
+
 const TYPE_BRIGHTNESS: Record<string, number> = {
-  decision:      0.55,
-  person:        0.45,
-  project:       0.40,
-  tech:          0.35,
-  open_question: 0.30,
+  decision:      0.7,
+  person:        0.7,
+  project:       0.7,
+  tech:          0.7,
+  open_question: 0.7,
 };
 
 interface NodeMeshProps {
@@ -23,8 +31,13 @@ export function NodeMesh({ node, position, phaseOffset = 0 }: NodeMeshProps) {
 
   const baseScale = useMemo(() => 0.045 + node.weight * 0.045, [node.weight]);
   const baseBrightness = useMemo(
-    () => TYPE_BRIGHTNESS[node.type] ?? 0.4,
+    () => TYPE_BRIGHTNESS[node.type] ?? 0.5,
     [node.type],
+  );
+  
+  const color = useMemo(
+    () => TYPE_COLORS[node.type] ?? "#ffffff",
+    [node.type]
   );
 
   useFrame(({ clock }) => {
@@ -55,8 +68,8 @@ export function NodeMesh({ node, position, phaseOffset = 0 }: NodeMeshProps) {
     <mesh ref={meshRef} position={position}>
       <octahedronGeometry args={[1, 0]} />
       <meshStandardMaterial
-        color="#ffffff"
-        emissive="#ffffff"
+        color={color}
+        emissive={color}
         emissiveIntensity={baseBrightness}
         roughness={0.35}
         metalness={0.05}

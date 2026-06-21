@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrainScene } from "../scene/BrainScene";
 import { LegendPanel } from "../panels/LegendPanel";
 import { QueryBar } from "../panels/QueryBar";
@@ -14,7 +14,8 @@ import { useTTS } from "../voice/useTTS";
 export default function Brain() {
   const { activatedNodeIds, setActivatedNodes, clearActivated } = useGraphStore();
   const { lastResponse } = useQueryStore();
-  const { speak, analyserNode } = useTTS();
+  const { speak, stop, isSpeaking, analyserNode } = useTTS();
+  const [isTTSMuted, setIsTTSMuted] = useState(false);
 
   // Guard so we don't re-speak the same response on unrelated re-renders
   const lastSpokenAnswerRef = useRef<string | null>(null);
@@ -38,9 +39,11 @@ export default function Brain() {
       lastResponse.answer !== lastSpokenAnswerRef.current
     ) {
       lastSpokenAnswerRef.current = lastResponse.answer;
-      void speak(lastResponse.answer);
+      if (!isTTSMuted) {
+        void speak(lastResponse.answer);
+      }
     }
-  }, [lastResponse, setActivatedNodes, clearActivated, speak]);
+  }, [lastResponse, setActivatedNodes, clearActivated, speak, isTTSMuted]);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
@@ -57,7 +60,15 @@ export default function Brain() {
       {/* ── Bottom row ── */}
       <SourcesPanel />
       <QueryBar />
-      <ResponsePanel />
+      <ResponsePanel 
+        isSpeaking={isSpeaking}
+        onStopTTS={stop}
+        isTTSMuted={isTTSMuted}
+        onToggleMute={() => {
+          setIsTTSMuted(prev => !prev);
+          if (!isTTSMuted) stop();
+        }}
+      />
 
       {/* ── Source drawer (slides in from right on citation chip click) ── */}
       <SourceDrawer />

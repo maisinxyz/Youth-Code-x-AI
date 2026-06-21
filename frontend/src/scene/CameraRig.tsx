@@ -23,21 +23,37 @@ export function CameraRig({ zoomTarget }: CameraRigProps) {
   // Reusable scratch vectors — never allocate inside useFrame.
   const desiredTarget = useRef(new THREE.Vector3());
   const offset = useRef(new THREE.Vector3());
+  const isAutoZooming = useRef(false);
 
   useEffect(() => {
     camera.position.set(0, 2, HOME_DISTANCE);
     camera.lookAt(0, 0, 0);
   }, [camera]);
 
-  useFrame(() => {
-    const controls = controlsRef.current;
-    if (!controls) return;
-
+  useEffect(() => {
     if (zoomTarget) {
       desiredTarget.current.set(zoomTarget[0], zoomTarget[1], zoomTarget[2]);
+      isAutoZooming.current = true;
     } else {
       desiredTarget.current.set(0, 0, 0);
+      isAutoZooming.current = true;
     }
+  }, [zoomTarget]);
+
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (controls) {
+      const onInteractionStart = () => {
+        isAutoZooming.current = false;
+      };
+      controls.addEventListener('start', onInteractionStart);
+      return () => controls.removeEventListener('start', onInteractionStart);
+    }
+  }, []);
+
+  useFrame(() => {
+    const controls = controlsRef.current;
+    if (!controls || !isAutoZooming.current) return;
 
     const targetVec = controls.target as THREE.Vector3;
 
@@ -56,6 +72,13 @@ export function CameraRig({ zoomTarget }: CameraRigProps) {
       offset.current.multiplyScalar(newDistance / currentDistance);
       camera.position.copy(targetVec).add(offset.current);
     }
+
+    if (
+      targetVec.distanceTo(desiredTarget.current) < 0.1 &&
+      Math.abs(currentDistance - desiredDistance) < 0.1
+    ) {
+      isAutoZooming.current = false;
+    }
   });
 
   return (
@@ -65,9 +88,9 @@ export function CameraRig({ zoomTarget }: CameraRigProps) {
       dampingFactor={0.07}
       autoRotate
       autoRotateSpeed={0.35}
-      minDistance={6}
-      maxDistance={32}
-      enablePan={false}
+      minDistance={2}
+      maxDistance={60}
+      enablePan={true}
     />
   );
 }

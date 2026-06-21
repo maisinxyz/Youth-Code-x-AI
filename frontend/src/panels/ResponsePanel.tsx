@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useQueryStore } from "../state/query";
 import { useDrawerStore } from "../state/drawer";
+import { Volume2, VolumeX, Square } from "lucide-react";
 import type { Source } from "../lib/api";
 
 const CHARS_PER_SEC = 30;
@@ -27,7 +28,14 @@ function ThinkingDots() {
   );
 }
 
-export function ResponsePanel() {
+export interface ResponsePanelProps {
+  isSpeaking?: boolean;
+  onStopTTS?: () => void;
+  isTTSMuted?: boolean;
+  onToggleMute?: () => void;
+}
+
+export function ResponsePanel({ isSpeaking, onStopTTS, isTTSMuted, onToggleMute }: ResponsePanelProps = {}) {
   const { lastResponse, isPending } = useQueryStore();
   const { openDrawer } = useDrawerStore();
   const [displayedText, setDisplayedText] = useState("");
@@ -80,13 +88,35 @@ export function ResponsePanel() {
           className="fixed bottom-24 right-6 z-20 w-80 max-h-[55vh] overflow-y-auto"
           style={{ scrollbarWidth: "none" }}
         >
-          <div className="rounded-2xl p-4" style={GLASS}>
+          <div className="rounded-2xl p-4 relative" style={GLASS}>
+            {/* Header / Controls */}
+            {onToggleMute && (
+              <div className="absolute top-4 right-4 flex gap-2 z-10">
+                {isSpeaking && onStopTTS && (
+                  <button
+                    onClick={onStopTTS}
+                    className="p-1 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                    title="Stop TTS"
+                  >
+                    <Square size={14} className="fill-current" />
+                  </button>
+                )}
+                <button
+                  onClick={onToggleMute}
+                  className="p-1 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                  title={isTTSMuted ? "Unmute TTS" : "Mute TTS"}
+                >
+                  {isTTSMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                </button>
+              </div>
+            )}
+            
             {isPending && !displayedText ? (
               <ThinkingDots />
             ) : (
               <>
                 {/* Typewritten answer */}
-                <p className="font-mono text-sm leading-relaxed text-white/80">
+                <p className="font-mono text-sm leading-relaxed text-white/80 pr-12">
                   {displayedText}
                   {!isDone && (
                     <span className="ml-0.5 inline-block h-3.5 w-px animate-pulse align-middle bg-white/60" />
