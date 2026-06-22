@@ -7,10 +7,14 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-DB_PATH = Path("data/waitlist.db")
+import os
 
-# Ensure data directory exists
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+if os.environ.get("VERCEL"):
+    DB_PATH = Path("/tmp/waitlist.db")
+else:
+    DB_PATH = Path("data/waitlist.db")
+    # Ensure data directory exists
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
