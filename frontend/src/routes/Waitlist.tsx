@@ -18,7 +18,8 @@ export default function Waitlist() {
     setError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/waitlist/join", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${API_URL}/waitlist/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
