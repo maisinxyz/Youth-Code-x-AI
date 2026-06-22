@@ -81,14 +81,14 @@ export function Navbar() {
             <Button asChild variant="ghost" size="sm" className="text-sm text-white/70">
               <Link to="/auth-proxy">Log In</Link>
             </Button>
-            <Button asChild size="sm" className="text-sm font-semibold text-white hover:brightness-110 border-none" style={{ background: "linear-gradient(135deg, #df9b5b 0%, #b45e1b 100%)" }}>
+            <Button asChild variant="outline" size="sm" className="text-sm font-semibold text-[#df9b5b] border-[#df9b5b]/50 bg-transparent hover:bg-[#df9b5b]/10 hover:text-[#df9b5b] transition-colors">
               <Link to="/signup">Sign Up</Link>
             </Button>
           </div>
 
           {/* Mobile Menu & CTAs */}
           <div className="flex items-center gap-2 md:hidden">
-            <Button asChild size="sm" className="text-xs font-semibold text-white hover:brightness-110 border-none" style={{ background: "linear-gradient(135deg, #df9b5b 0%, #b45e1b 100%)" }}>
+            <Button asChild variant="outline" size="sm" className="text-xs font-semibold text-[#df9b5b] border-[#df9b5b]/50 bg-transparent hover:bg-[#df9b5b]/10 hover:text-[#df9b5b] transition-colors">
               <Link to="/signup">Sign Up</Link>
             </Button>
             
