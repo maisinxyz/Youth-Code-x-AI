@@ -18,7 +18,7 @@ export default function Waitlist() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/waitlist/join", {
+      const response = await fetch("http://127.0.0.1:8000/waitlist/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

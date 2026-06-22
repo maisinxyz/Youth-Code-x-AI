@@ -164,8 +164,7 @@ export function FooterSection() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="h-px w-full" style={{ background: "rgba(255,255,255,0.06)" }} />
+
         <div className="px-6 py-5 md:px-8">
           <p className="text-center font-mono text-[11px] font-light text-white/20">© {year} Engram. All rights reserved.</p>
         </div>

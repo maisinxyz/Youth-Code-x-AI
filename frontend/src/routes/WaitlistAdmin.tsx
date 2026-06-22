@@ -34,7 +34,7 @@ export default function WaitlistAdmin() {
 
     async function fetchEntries() {
       try {
-        const response = await fetch("http://localhost:8000/waitlist/entries");
+        const response = await fetch("http://127.0.0.1:8000/waitlist/entries");
         if (!response.ok) {
           throw new Error("Failed to fetch entries");
         }
