@@ -34,7 +34,7 @@ export default function WaitlistAdmin() {
 
     async function fetchEntries() {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+        const API_URL = import.meta.env.PROD ? "/api" : "http://127.0.0.1:8000";
         const response = await fetch(`${API_URL}/waitlist/entries`);
         if (!response.ok) {
           throw new Error("Failed to fetch entries");
